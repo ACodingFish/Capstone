@@ -48,9 +48,9 @@ def Send_Thread():
                     os._exit(0)
                 out_msg = key_msg
                 server.send(out_msg.encode('utf-8'))
-                sys.stdout.write("<localhost>")
-                sys.stdout.write(out_msg)
-                sys.stdout.flush()
+                #   sys.stdout.write("<localhost>")
+                #   sys.stdout.write(out_msg)
+                #   sys.stdout.flush()
            
 
 start_new_thread(Recv_Thread,())
