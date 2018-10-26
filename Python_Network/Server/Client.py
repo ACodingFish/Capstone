@@ -20,6 +20,7 @@ if (num_args !=3):
 
 max_msg_size = 2048
 
+#   declare server setup variables
 ip_addr = str(sys.argv[1])
 port = int(sys.argv[2])
 server.connect((ip_addr,port))
