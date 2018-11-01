@@ -12,7 +12,7 @@ if sys.version_info[0] == 3:
 else:
     from thread import *
 
-
+ser = 0
 
 def serial_read_thread():
     while True:
