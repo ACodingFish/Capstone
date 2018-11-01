@@ -11,6 +11,7 @@ import socket
 import select
 import sys
 import os
+import serial
 
 if sys.version_info[0] == 3:
     from _thread import *
