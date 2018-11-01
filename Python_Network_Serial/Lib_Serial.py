@@ -18,14 +18,6 @@ def serial_read_thread():
     while True:
         in_msg = ser.read().decode('utf-8')
         print(in_msg)
-            
-def serial_write_thread():
-    while True:
-        key_msg = sys.stdin.readline()
-        if (key_msg[:4].lower() == "exit"):
-            os._exit(0)
-        out_msg = key_msg
-        ser.write(out_msg.encode('utf-8'))
         
 def serial_write(out_msg):
     ser.write(out_msg.encode('utf-8'))
@@ -35,11 +27,3 @@ def init_Serial(com_port, baud_rate):
     ser = serial.Serial(com_port,baud_rate)  #115200 baud rate, could start with 9600
     s = [0,1]
     start_new_thread(serial_read_thread,())
-    start_new_thread(serial_write_thread,())
-
-while True:
-    pass
-	#read_serial=ser.readline()
-	#s[0] = str(int (ser.readline(),16))
-	#print s[0]
-	#print read_serial
