@@ -60,7 +60,7 @@ def Send_Thread():
                 #   sys.stdout.write(out_msg)
                 #   sys.stdout.flush()
 
-ser = serial.Serial(com_port,baud_rate)  #115200 baud rate, could start with 9600    
+ser = serial.Serial('/dev/ttyACM0',9600)  #115200 baud rate, could start with 9600    
 #use "ls /dev/tty*" to find com port
 s = [0,1]
 start_new_thread(serial_read_thread,(ser))
@@ -73,7 +73,6 @@ def serial_read_thread():
 def serial_write(out_msg):
     ser.write(out_msg.encode('utf-8'))                
            
-Lib_Serial.init_Serial('/dev/ttyACM0',9600)
 start_new_thread(serial_read_thread, ())
 start_new_thread(Recv_Thread,())
 start_new_thread(Send_Thread,())
