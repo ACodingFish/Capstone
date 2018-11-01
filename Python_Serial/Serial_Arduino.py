@@ -7,7 +7,6 @@
 
 import serial
 import sys
-import Logging
 if sys.version_info[0] == 3:
     from _thread import *
 else:
