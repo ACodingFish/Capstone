@@ -12,7 +12,7 @@ if sys.version_info[0] == 3:
 else:
     from thread import *
 
-ser = null;
+ser = serial.Serial(None,0)
 
 def init_Serial(com_port, baud_rate):
     #use "ls /dev/tty*" to find com port
