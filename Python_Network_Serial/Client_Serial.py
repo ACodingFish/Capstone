@@ -42,7 +42,7 @@ def Recv_Thread():
         for socks in read_sockets:
             if socks == server:
                 in_msg = socks.recv(max_msg_size).decode('utf-8')
-                Lib_Serial.serial_write(in_msg)
+                serial_write(in_msg)
                 print(in_msg)
 
 def Send_Thread():
