@@ -63,7 +63,6 @@ def Send_Thread():
 ser = serial.Serial('/dev/ttyACM0',9600)  #115200 baud rate, could start with 9600    
 #use "ls /dev/tty*" to find com port
 s = [0,1]
-start_new_thread(serial_read_thread,(ser))
 
 def serial_read_thread():
     while True:
