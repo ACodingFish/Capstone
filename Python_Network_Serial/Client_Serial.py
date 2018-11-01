@@ -5,6 +5,7 @@ import socket
 import select
 import sys
 import os
+import Lib_Serial
 
 if sys.version_info[0] == 3:
     from _thread import *
@@ -35,7 +36,7 @@ def Recv_Thread():
         for socks in read_sockets:
             if socks == server:
                 in_msg = socks.recv(max_msg_size).decode('utf-8')
-                serial_write(in_msg)
+                Lib_Serial.serial_write(in_msg)
                 print(in_msg)
 
 def Send_Thread():
@@ -54,7 +55,7 @@ def Send_Thread():
                 #   sys.stdout.flush()
            
            
-init_Serial('/dev/ttyACM0',9600)
+Lib_Serial.init_Serial('/dev/ttyACM0',9600)
 start_new_thread(Recv_Thread,())
 start_new_thread(Send_Thread,())
 
