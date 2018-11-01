@@ -12,7 +12,13 @@ if sys.version_info[0] == 3:
 else:
     from thread import *
 
-ser = 0
+ser = null;
+
+def init_Serial(com_port, baud_rate):
+    #use "ls /dev/tty*" to find com port
+    ser = serial.Serial(com_port,baud_rate)  #115200 baud rate, could start with 9600
+    s = [0,1]
+    start_new_thread(serial_read_thread,())
 
 def serial_read_thread():
     while True:
@@ -22,8 +28,3 @@ def serial_read_thread():
 def serial_write(out_msg):
     ser.write(out_msg.encode('utf-8'))
 
-def init_Serial(com_port, baud_rate):
-    #use "ls /dev/tty*" to find com port
-    ser = serial.Serial(com_port,baud_rate)  #115200 baud rate, could start with 9600
-    s = [0,1]
-    start_new_thread(serial_read_thread,())
