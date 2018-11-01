@@ -15,11 +15,11 @@ else:
 
 def init_Serial(com_port, baud_rate):
     #use "ls /dev/tty*" to find com port
-    global ser = serial.Serial(com_port,baud_rate)  #115200 baud rate, could start with 9600
+    ser = serial.Serial(com_port,baud_rate)  #115200 baud rate, could start with 9600
     s = [0,1]
-    start_new_thread(serial_read_thread,())
+    start_new_thread(serial_read_thread,(ser))
 
-def serial_read_thread():
+def serial_read_thread(ser):
     while True:
         in_msg = ser.read().decode('utf-8')
         print(in_msg)
