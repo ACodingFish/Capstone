@@ -44,7 +44,7 @@ class PI_SerCli:
             for socks in read_sockets:
                 if socks == self.server:
                     self.in_net_msg = socks.recv(self.max_msg_size).decode('utf-8')
-                    self.serial_write(in_net_msg)
+                    self.serial_write(self.in_net_msg)
                     print(self.in_net_msg)
                     
     def Send_Msg(self, message):
