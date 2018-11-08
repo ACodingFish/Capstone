@@ -12,7 +12,7 @@ if sys.version_info[0] == 3:
 else:
     from thread import *
 
-class PI_Cli:
+class PI_SerCli:
     def __init__(self, ip_addr, port, baud_rate):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         #self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -32,8 +32,6 @@ class PI_Cli:
         self.in_net_msg = ""
         self.in_ser_msg = ""
         self.out_msg = ""
-        self.sockets_list = [self.server]
-        self.read_sockets, self.write_sockets, self.error_sockets = select.select(self.sockets_list,self.sockets_list,[])
         
         start_new_thread(self.Recv_Thread,())
         #start_new_thread(self.Send_Thread,())
@@ -41,14 +39,18 @@ class PI_Cli:
 
     def Recv_Thread(self):
         while True:
-            for socks in self.read_sockets:
+            sockets_list = [self.server]
+            read_sockets, write_sockets, error_sockets = select.select(sockets_list,sockets_list,[])
+            for socks in read_sockets:
                 if socks == self.server:
                     self.in_net_msg = socks.recv(self.max_msg_size).decode('utf-8')
                     self.serial_write(in_net_msg)
                     print(self.in_net_msg)
                     
     def Send_Msg(self, message):
-        for socks in self.write_sockets:
+        sockets_list = [self.server]
+        read_sockets, write_sockets, error_sockets = select.select(sockets_list,sockets_list,[])
+        for socks in write_sockets:
                 if socks == self.server:
                     self.out_msg = message
                     self.server.send(self.out_msg.encode('utf-8'))

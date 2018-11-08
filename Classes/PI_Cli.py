@@ -24,21 +24,23 @@ class PI_Cli:
             
         self.in_msg = ""
         self.out_msg = ""
-        self.sockets_list = [self.server]
-        self.read_sockets, self.write_sockets, self.error_sockets = select.select(self.sockets_list,self.sockets_list,[])
         
         start_new_thread(self.Recv_Thread,())
         #start_new_thread(self.Send_Thread,())
 
     def Recv_Thread(self):
         while True:
-            for socks in self.read_sockets:
+            sockets_list = [self.server]
+            read_sockets, write_sockets, error_sockets = select.select(sockets_list,sockets_list,[])
+            for socks in read_sockets:
                 if socks == self.server:
                     self.in_msg = socks.recv(self.max_msg_size).decode('utf-8')
                     print(self.in_msg)
                     
     def Send_Msg(self, message):
-        for socks in self.write_sockets:
+        sockets_list = [self.server]
+        read_sockets, write_sockets, error_sockets = select.select(sockets_list,sockets_list,[])
+        for socks in write_sockets:
                 if socks == self.server:
                     self.out_msg = message
                     self.server.send(self.out_msg.encode('utf-8'))
