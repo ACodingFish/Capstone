@@ -19,7 +19,7 @@ void setup()
     pinMode(13, INPUT);
     pinMode(12, INPUT);
     
-    Serial.begin(9600);     // Set the boud rate to 9600
+    Serial.begin(115200);     // Set the boud rate to 9600
  
     mycomflag=1;    // Default state of operation
  
