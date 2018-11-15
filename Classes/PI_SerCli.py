@@ -1,6 +1,14 @@
 #Client program - Based on chatroom program
 #Example found at:
-#www.geeksforgeeks.org/simple-chat-room-using-python/amp/
+# Wifi:
+# https://www.geeksforgeeks.org/simple-chat-room-using-python/amp/
+# and
+# Serial:
+# https://www.instructables.com/id/Raspberry-Pi-Arduino-Serial-Communication/
+# and
+# https://classes.engineering.wustl.edu/ese205/core/index.php?title=Serial_Communication_between_Raspberry_Pi_%26_Arduino
+# and
+# https://stackoverflow.com/questions/13017840/using-pyserial-is-it-possble-to-wait-for-data
 import socket
 import select
 import sys
