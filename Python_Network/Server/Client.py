@@ -1,6 +1,4 @@
-#Client program - Based on chatroom program
-#Example found at:
-#www.geeksforgeeks.org/simple-chat-room-using-python/amp/
+
 import socket
 import select
 import sys
