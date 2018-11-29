@@ -1,3 +1,4 @@
+
 #include <Servo.h>
 
 Servo myservoA;
@@ -12,16 +13,13 @@ static int v=0;
 static int mycomflag=0;
 String mycommand="";
 
+void setup() {
 
-void setup() 
-{ 
-    // Unsure what these do and if they are required
+      // Unsure what these do and if they are required
     pinMode(13, INPUT);
     pinMode(12, INPUT);
     
     Serial.begin(9600);     // Set the boud rate to 9600
- 
-    mycomflag=1;    // Default state of operation
  
     // Attach each servo to a specific pin
     myservoA.attach(11);    // Waist servo at port 11
@@ -32,31 +30,46 @@ void setup()
     myservoF.attach(10);    // Gripper servo at port 10
     
     // Position the waist in the center
-    myservoA.write(85);
+    myservoA.write(90);
     // Position shoulder to a lower angle for better arm balance
-    myservoB.write(35);
+    myservoB.write(70);
     // Position elbow to a higher angle for better arm balance
-    myservoC.write(120);
+    myservoC.write(140);
     // Position the wrist elevation in the center
-    myservoD.write(115);
+    myservoD.write(90);
     // Correct for a slight offset for the wrist rotation
     myservoE.write(100);
     // Default to a wide open gripper
     myservoF.write(30);
+  
+
 }
 
+void loop() {
 
-void loop() 
-{ 
-    // Set mycommand if a message is being entered into the serial port
-    while (Serial.available() > 0)
+while (Serial.available() > 0)
     {
         mycommand += char(Serial.read());
         delay(2);
     }
 
-    // If a command is provided, identify what it is before resetting it
-    if (mycommand.length() > 0)
+recieved_command();
+Servos();
+
+}
+
+void recieved_command(){
+
+if (mycommand.length() > 0)
+  Serial.print("I recieved a command");
+  
+}
+ 
+ 
+ void Servos() {
+
+ // If a command is provided, identify what it is before resetting it
+ if (mycommand.length() > 0)
     {
         if(mycommand=="#auto")
         {
@@ -104,7 +117,7 @@ void loop()
                 
                 // Move waist
                 case 'a':
-                if (v <= 150) myservoA.write(v);
+                myservoA.write(v);
                 Serial.print("moving waist to ");
                 Serial.print(v);
                 Serial.println(" degrees");
@@ -113,7 +126,7 @@ void loop()
 
                 // Move shoulder
                 case 'b':
-                if (v <= 150) myservoB.write(v);
+                myservoB.write(v);
                 Serial.print("moving shoulder to ");
                 Serial.print(v);
                 Serial.println(" degrees");
@@ -131,7 +144,7 @@ void loop()
 
                 // Move wrist elevation
                 case 'd':
-                 if(v >= 15 && v <= 170) myservoD.write(v);
+                myservoD.write(v);
                 Serial.print("elevating wrist to ");
                 Serial.print(v);
                 Serial.println(" degrees");
@@ -149,7 +162,7 @@ void loop()
 
                 // Move gripper only between 30 and 90 degrees
                 case 'f':
-                if(v >= 30 && v <= 90) myservoF.write(v);
+                if(v >= 30 || v <= 90) myservoF.write(v);
                 Serial.print("moving gripper to ");
                 Serial.print(v);
                 Serial.println(" degrees");
