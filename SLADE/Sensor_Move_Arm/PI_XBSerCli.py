@@ -37,7 +37,7 @@ class PI_XBSerCli:
         self.xb_sleep_time = 1
         self.xb_min_dist = 5.0
         self.GO_HOME = "85a, 35b, 120c, 115d"
-        self.LOCKOUT = false
+        self.LOCKOUT = False
             
         self.in_net_msg = ""
         self.in_ser_msg = ""
