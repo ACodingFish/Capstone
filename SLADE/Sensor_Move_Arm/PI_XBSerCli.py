@@ -64,7 +64,7 @@ class PI_XBSerCli:
         while True:
             data = self.xb_comm.get_msg()
             if (len(data) > 0):
-                average = int(data)
+                average = float(data)
                 if (average <= self.xb_min_dist):
                     self.serial_write(self.GO_HOME)
                     self.Send_Msg("Robot Went Home")
