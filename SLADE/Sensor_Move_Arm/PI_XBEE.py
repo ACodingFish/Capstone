@@ -13,7 +13,6 @@ class PI_XBEE:
         self.zb = DigiMesh(self.ser)
         self.data = ""
         start_new_thread(self.recv_thread,())
-        self.i = 0
         
     def recv_thread(self):
         #while True:
