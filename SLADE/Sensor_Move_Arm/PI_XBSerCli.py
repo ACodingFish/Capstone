@@ -37,7 +37,7 @@ class PI_XBSerCli:
         self.xb_sleep_time = 1
         self.xb_min_dist = 5.0
         self.GO_HOME = "85a, 35b, 120c, 115d"
-        
+        self.LOCKOUT = false
             
         self.in_net_msg = ""
         self.in_ser_msg = ""
@@ -56,18 +56,24 @@ class PI_XBSerCli:
                 if socks == self.server:
                     self.in_net_msg = socks.recv(self.max_msg_size).decode('utf-8')
                     #put check for xb data here
-                    self.serial_write(self.in_net_msg)
+                    if (self.LOCKOUT == False):
+                        self.serial_write(self.in_net_msg)
+                        print("LOCKOUT")
                     print(self.in_net_msg)
     
     #temporary thread - to be removed in later development
     def XB_Thread(self):
         while True:
+            self.LOCKOUT = False
             data = self.xb_comm.get_msg()
             if (len(data) > 0):
                 average = float(data)
                 if (average <= self.xb_min_dist):
                     self.serial_write(self.GO_HOME)
                     self.Send_Msg("Robot Went Home")
+                    self.LOCKOUT = True;
+                    time.sleep(1)
+                    
             
             
                     
