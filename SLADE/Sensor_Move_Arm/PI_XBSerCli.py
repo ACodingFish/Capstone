@@ -14,7 +14,7 @@ else:
 from PI_XBEE import *
 
 class PI_XBSerCli:
-    def __init__(self, ip_addr, port, ard_com_port, ard_baud_rate, xb_com_port, xb_baud_rate):
+    def __init__(self, ip_addr, port, ard_com_port, ard_baud_rate, xb_com_port):
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         #self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.max_msg_size = 2048
@@ -33,7 +33,7 @@ class PI_XBSerCli:
             os._exit(0)
         
         #XBee init values
-        xb_comm = PI_XBEE(xb_com_port, xb_baud_rate)
+        xb_comm = PI_XBEE(xb_com_port)
         xb_sleep_time = 1
         xb_min_dist = 5
         self.GO_HOME = "85a, 35b, 120c, 115d"
