@@ -35,7 +35,7 @@ class PI_XBSerCli:
         #XBee init values
         self.xb_comm = PI_XBEE(xb_com_port)
         self.xb_sleep_time = 1
-        self.xb_min_dist = 5
+        self.xb_min_dist = 5.0
         self.GO_HOME = "85a, 35b, 120c, 115d"
         
             
