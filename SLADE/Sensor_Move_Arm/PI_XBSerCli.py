@@ -33,9 +33,9 @@ class PI_XBSerCli:
             os._exit(0)
         
         #XBee init values
-        xb_comm = PI_XBEE(xb_com_port)
-        xb_sleep_time = 1
-        xb_min_dist = 5
+        self.xb_comm = PI_XBEE(xb_com_port)
+        self.xb_sleep_time = 1
+        self.xb_min_dist = 5
         self.GO_HOME = "85a, 35b, 120c, 115d"
         
             
@@ -62,10 +62,10 @@ class PI_XBSerCli:
     #temporary thread - to be removed in later development
     def XB_Thread(self):
         while True:
-            time.sleep(xb_sleep_time)
-            data = xb_comm.get_msg()
+            time.sleep(self.xb_sleep_time)
+            data = self.xb_comm.get_msg()
             average = int(data)
-            if (average <= xb_min_dist):
+            if (average <= self.xb_min_dist):
                 self.serial_write(self.GO_HOME)
                 self.Send_Msg("Robot Went Home")
             
