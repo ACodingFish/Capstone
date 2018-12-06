@@ -15,10 +15,10 @@ class PI_XBEE:
         start_new_thread(self.recv_thread,())
         
     def recv_thread(self):
-        #while True:
-        incoming = self.zb.wait_read_frame()
-        self.data = incoming.get('data').decode("utf-8")
-        print(self.data)
+        while True:
+            incoming = self.zb.wait_read_frame()
+            self.data = incoming.get('data').decode("utf-8")
+            print(self.data)
             
     def send_msg(self, message):
         #sending code

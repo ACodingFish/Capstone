@@ -43,7 +43,7 @@ class SMonitor:
         
     def monitor_thread(self):
         while True:
-            #time.sleep(0.1) #Delay between detections
+            time.sleep(0.1) #Delay between detections
             GPIO.output(trig,True)
             time.sleep(0.00001) #Pulse time = 10us
             GPIO.output(trig,False)
