@@ -26,7 +26,7 @@ class PI_XBEE:
         self.zb.send("tx", id = b'\x10', frame_id = b'\x00', \
                      dest_addr = b'\x00\x13\xA2\x00\x41\x54\xF3\xFF', \
                      reserved = b'\xFF\xFE', broadcast_radius = b'\x00', \
-                     options = b'\x00', data = str(message))
+                     options = b'\x00', data = message)
                      
     def get_msg(self):
         return self.data
