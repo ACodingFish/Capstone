@@ -63,12 +63,13 @@ class PI_XBSerCli:
     def XB_Thread(self):
         while True:
             time.sleep(self.xb_sleep_time)
-            data = self.xb_comm.get_msg()
-            print("HERE",data,"HERE")
-            #average = int(data)
-            #if (average <= self.xb_min_dist):
-            #    self.serial_write(self.GO_HOME)
-            #    self.Send_Msg("Robot Went Home")
+                data = self.xb_comm.get_msg()
+                if (len(data) > 0):
+                    print("HERE",data,"HERE")
+                    #average = int(data)
+                    #if (average <= self.xb_min_dist):
+                    #    self.serial_write(self.GO_HOME)
+                    #    self.Send_Msg("Robot Went Home")
             
             
                     
