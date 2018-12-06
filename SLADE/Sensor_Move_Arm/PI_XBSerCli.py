@@ -85,4 +85,4 @@ class PI_XBSerCli:
     def serial_read_thread(self):
         while True:
             self.in_ser_msg = self.ser.read().decode('utf-8')
-            print(in_ser_msg)
+            #print(self.in_ser_msg)
