@@ -11,8 +11,8 @@ class PI_XBEE:
     def __init__(self, com_port):
         self.ser = serial.Serial(com_port, 9600)
         self.zb = DigiMesh(self.ser)
-        start_new_thread(self.recv_thread,())
         self.data = ""
+        start_new_thread(self.recv_thread,())
         self.i = 0
         
     def recv_thread(self):

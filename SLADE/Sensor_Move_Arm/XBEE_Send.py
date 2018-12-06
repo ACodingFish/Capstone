@@ -9,6 +9,6 @@ monitor = SMonitor(3)
 
 while True:
     time.sleep(1)
-    average = monitor.get_avg()
+    average = str(monitor.get_avg())
     xb_comm.send_msg(average)
     
