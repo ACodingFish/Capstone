@@ -5,11 +5,11 @@ from PI_XBSerCli import *
 
 if sys.version_info[0] == 3:
     IP_ADDR = input("Input IP Address: ")
-    PORT = input("Input Port Number: ")
+    PORT = int(input("Input Port Number: "))
     COM_ARD = input("Input Arduino Serial Port: ")
-    BAUD_RATE_ARD = input("Input Arduino Baud Rate: ")
+    BAUD_RATE_ARD = int(input("Input Arduino Baud Rate: "))
     COM_XB = input("Input XBee Serial Port: ")
-    BAUD_RATE_XB = input("Input XBee Baud Rate: ")
+    BAUD_RATE_XB = int(input("Input XBee Baud Rate: "))
 else:
     IP_ADDR = raw_input("Input IP Address: ")
     PORT = input("Input Port Number: ")
