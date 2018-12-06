@@ -62,7 +62,6 @@ class PI_XBSerCli:
     #temporary thread - to be removed in later development
     def XB_Thread(self):
         while True:
-            time.sleep(self.xb_sleep_time)
             data = self.xb_comm.get_msg()
             if (len(data) > 0):
                 print("HERE",data,"HERE")
