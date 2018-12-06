@@ -38,6 +38,7 @@ class PI_XBSerCli:
         self.xb_min_dist = 5.0
         self.GO_HOME = "85a, 35b, 120c, 115d"
         self.LOCKOUT = False
+        self.LOCKOUT_TIME = 1.0 # seconds
             
         self.in_net_msg = ""
         self.in_ser_msg = ""
@@ -72,7 +73,7 @@ class PI_XBSerCli:
                     self.serial_write(self.GO_HOME)
                     self.Send_Msg("Robot Went Home")
                     self.LOCKOUT = True;
-                    time.sleep(1)
+                    time.sleep(self.LOCKOUT_TIME)
                     
             
             
