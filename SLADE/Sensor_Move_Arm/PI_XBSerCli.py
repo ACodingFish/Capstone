@@ -59,6 +59,7 @@ class PI_XBSerCli:
                     #put check for xb data here
                     if (self.LOCKOUT == False):
                         self.serial_write(self.in_net_msg)
+                    else:
                         print("LOCKOUT")
                     print(self.in_net_msg)
     
