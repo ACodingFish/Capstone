@@ -23,6 +23,7 @@ class SMonitor:
         GPIO.setup(trig,GPIO.OUT)
         GPIO.setup(echo,GPIO.IN)
         GPIO.output(trig,False)
+        self.count = 0
             
     def get_elem(self):
         #get some stuff
@@ -62,5 +63,10 @@ class SMonitor:
             
     def get_avg(self):
         # compute average
-        print(self.avg)
+        if (self.count >= 20):
+            os.system('clear')
+            self.count = 0
+        else:
+            self.count += 1
+        print("Measured Value: %(avg)d" % {"avg": self.avg} )
         return self.avg
