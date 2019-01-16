@@ -59,7 +59,7 @@ class PI_PWM:
         
     def monitor_pwm(self)
         while True:
-            self.update_period()
+            self.update_period()    # Update after toggle
             while self.PWM_ACTIVE:
                 IO.output(self.pin, 0)
                 time.sleep(self.off_period)
