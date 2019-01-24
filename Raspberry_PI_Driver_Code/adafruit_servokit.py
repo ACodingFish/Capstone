@@ -63,7 +63,7 @@ class ServoKit:
        :param int reference_clock_speed: The frequency of the internal reference clock in Hertz.
                                          Default reference clock speed is ``25000000``.
     """
-    def __init__(self, *, channels, address=0x40, reference_clock_speed=25000000):
+    def __init__(self, channels, address=0x40, reference_clock_speed=25000000):
         if channels not in [8, 16]:
             raise ValueError("servo_channels must be 8 or 16!")
         self._items = [None] * channels
