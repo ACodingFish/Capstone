@@ -5,10 +5,8 @@ kit = ServoKit(channels=16) #creates the serevokit class with channels set to 16
 #kit.servo[0].actuation_range = 160 # to set actuation range
 
 
-
-kit.servo[0].angle = 180 #move hat 0 to 180 degrees.
-
-def set_angle(servo,angle):
-
-def parse_message(instruction):
+num_args = len(sys.argv)
+if (num_args == 2):
+    kit.servo[0].angle = sys.argv[1] #move hat 0 to 180 degrees.
+    
     
