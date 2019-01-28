@@ -63,10 +63,13 @@ class PI_ServoController:
             servos.set_current_angle(servos.home)
     
     def set_servo_position(self, index, new_pos):
-        if ((new_pos > self.servo_list[index].range)||(new_pos < 1)):
-            print("Invalid Servo Position")
+        if (index >=0):
+            if ((new_pos > self.servo_list[index].range)||(new_pos < 1)):
+                print("Invalid Servo Position")
+            else:
+               self.servo_list[index].set_current_angle(new_pos)
         else:
-           self.servo_list[index].set_current_angle(new_pos)
+            print("Invalid Index.")
             
     def servo_manager_thread(self):
         while True:
