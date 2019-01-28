@@ -1,3 +1,4 @@
+
 import sys
 
 # allows code in python 2 AND 3 
@@ -5,41 +6,38 @@ if sys.version_info[0] == 3:
     from _thread import *
 else:
     from thread import *
-
-
-    
-# First we receive the command
-
-command_in = input('Enter a command for the Robot: ')
+        
+angle = ""
 servo = ""
-angle = None
-
-
-
-#def recieve_command();
- #   while True:
         
+def parse_function(command_in):
+    
+    global angle
+    global servo
+    j = 0
+    temp = ""
+    
+    for i in command_in:
+        sorter = list(command_in[j])
+        #print(sorter)
+        m = 0
         
+        for k in sorter:
+            number_indicator = sorter[m].isdigit()
             
-def send_command();
-    while True
-        if command_in != "":
-                single_command = command_in.split(', ')[0]
-                command_characters = list(single_command)
-                i = 0
-                for command_characters != []
-                    number_indicator = command_characters[i].isdigit
-                    if number_indicator == True
-                        angle = angle+command_characters[i]
-                    if number_indicator == False
-                        servo = command_characters[i]
-                    i++
-                    [s[i+2] for s in command_in]
+            if number_indicator == True:
+                temp = sorter[m]
+                angle = angle+temp
+                m = m+1
+                
+            if number_indicator == False:
+                servo = sorter[m]
+                m = m+1
                 print(angle, servo)
-
+                angle = ""
+                servo = ""
+        j = j+1
             
-#start_new_thread(recieve_command,())
-start_new_thread(send_command,())
+   
 
-while True:
-    pass
+parse_function("12a 14b")
