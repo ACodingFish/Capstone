@@ -39,13 +39,16 @@ class PI_Servo:
         self.target_angle = self.prev_angle
     
 class PI_ServoController:
-    def __init__(self, max_channels):
+    def __init__(self, max_channels,):
         self.servos_controlled = False;
         self.max_channels = max_channels
         self.kit = ServoKit(channels=self.max_channels)
         self.servo_list = []
         #add servos
-        add_servo(120, 60)
+        sv_info = [[120,60],[120,60],[120,60]]
+        for sv in sv_info:
+            self.add_servo(sv[0],sv[1])
+        
         start_new_thread(self.servo_manager_thread,())  #start thread
         self.servos_controlled = True
         
@@ -53,7 +56,7 @@ class PI_ServoController:
         index = len(self.servo_list)
         if (index < self.max_channels):
             self.kit.servo[index].actuation_range = range_deg
-            self.servo_list[index].append(PI_Servo(index, range_deg, home_pos))
+            self.servo_list.append(PI_Servo(index, range_deg, home_pos))
         else:
             print("Servos at Max Capacity")
             
@@ -63,13 +66,15 @@ class PI_ServoController:
             servos.set_current_angle(servos.home)
     
     def set_servo_position(self, index, new_pos):
-        if (index >=0):
-            if ((new_pos > self.servo_list[index].range)||(new_pos < 1)):
+        new_pos = int(new_pos)
+        index = int(index)
+        if ((index >=0) and (index < len(self.servo_list))):
+            if ((new_pos > self.servo_list[index].range)or(new_pos < 1)):
                 print("Invalid Servo Position")
             else:
                self.servo_list[index].set_current_angle(new_pos)
         else:
-            print("Invalid Index.")
+            print("Invalid Index: ", index)
             
     def servo_manager_thread(self):
         while True:
