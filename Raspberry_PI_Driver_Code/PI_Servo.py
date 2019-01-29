@@ -9,18 +9,14 @@ else:
     from thread import *
 
 from adafruit_servokit import ServoKit
-kit = ServoKit(channels=16) #creates the serevokit class with channels set to 16
+#kit = ServoKit(channels=16) #creates the serevokit class with channels set to 16
 #kit.servo[0].set_pulse_width_range(1000, 2000) #to change pulse width range
 #kit.servo[0].actuation_range = 160 # to set actuation range
 
-kit.servo[0].actuation_range = 120 # to set actuation range
+#kit.servo[0].actuation_range = 120 # to set actuation range
 num_args = len(sys.argv)
 if (num_args == 2):
     kit.servo[0].angle = int(sys.argv[1]) #move hat 0 to 180 degrees.
-    
-time.sleep(1.5)
-print("FIN!")
-time.sleep(0.5)
     
 class PI_Servo:
     def __init__(self, index, range_deg, home_pos):
@@ -44,8 +40,8 @@ class PI_ServoController:
         self.max_channels = max_channels
         self.kit = ServoKit(channels=self.max_channels)
         self.servo_list = []
-        #add servos
-        sv_info = [[120,60],[120,60],[120,60]]
+        #add servos [[sv1_range, sv1_home], [sv2...],...]
+        sv_info = [[270,60],[270,60],[120,60],[120,60],[120,60]]
         for sv in sv_info:
             self.add_servo(sv[0],sv[1])
         
