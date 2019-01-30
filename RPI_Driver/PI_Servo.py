@@ -1,4 +1,6 @@
-
+# Uses product/libraries from:
+# https://www.adafruit.com/product/2327
+# https://learn.adafruit.com/adafruit-16-channel-pwm-servo-hat-for-raspberry-pi/
 import sys
 import os
 import time
