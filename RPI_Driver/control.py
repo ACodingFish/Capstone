@@ -1,6 +1,5 @@
 import os
 from PI_Servo import *
-from commandInput import *
 
 servo_controller = PI_ServoController(16)
 while True:
