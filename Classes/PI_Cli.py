@@ -5,6 +5,7 @@ import socket
 import select
 import sys
 import os
+from PI_Servo import *
 
 if sys.version_info[0] == 3:
     from _thread import *
