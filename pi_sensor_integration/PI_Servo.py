@@ -116,7 +116,7 @@ class PI_ServoController:
         #pre_loop_time = 0
         while True:
             #print((time.time()-pre_loop_time)%1.0)
-            time.sleep(1)
+            time.sleep(.05)
             if (self.servos_controlled == True):
                 if (self.servos_obstructed == False):
                     for servos in self.servo_list:
