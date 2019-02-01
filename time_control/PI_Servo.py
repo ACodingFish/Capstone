@@ -28,10 +28,12 @@ class PI_Servo:
         self.min_pos = min_pos
         self.home = home_pos
         #make a force home
-        self.current_angle = home_pos-1
-        self.prev_angle = home_pos-1
+        self.current_angle = home_pos
+        self.prev_angle = home_pos
         self.target_angle = home_pos
         self.incrementing = False
+        self.force_home()
+        
         
     def set_current_angle(self, angle):
         self.target_angle = angle;
@@ -48,6 +50,12 @@ class PI_Servo:
     
     def set_hard_stop(self):
         self.target_angle = self.current_angle
+        
+    def force_home(self): # be careful with this as it may damage equipment or persons if they are in the robot's path
+        self.current_angle = home_pos-1
+        self.prev_angle = home_pos-1
+        self.target_angle = home_pos
+        
     
 class PI_ServoController:
     def __init__(self, max_channels):
@@ -82,6 +90,11 @@ class PI_ServoController:
         for servos in self.servo_list:
             #self.kit.servo[servos.index].angle = int(servos.home)
             servos.set_current_angle(servos.home)
+    
+    def force_home(self):
+        for servos in self.servo_list:
+            #self.kit.servo[servos.index].angle = int(servos.home)
+            servos.force_home()
             
     def parse(self, commands):
         for command in commands.split(", "):
@@ -92,9 +105,13 @@ class PI_ServoController:
                 else:#elif (index>0):           
                     #print("\tIndex: ",int(command[:index]),"\tString: ",command[index:])
                     print("Command:",command[index:].replace('\n',''))
-                    servo_index = {"set_current_anglea": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "home":-2}.get(command[index:].replace('\n',''), -1)
+                    servo_index = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "home":-2, "obst":-3, "obcl":-4}.get(command[index:].replace('\n',''), -1)
                     if servo_index == -2:
                         self.go_home()
+                    elif servo_index == -3:
+                        servo_controller.servos_obstructed = True
+                    elif servo_index == -4:
+                        servo_controller.servos_obstructed = False
                     elif (servo_index >=0 and index >0):
                         self.set_servo_position(servo_index, command[:index]) # servo_index, servo_position
                     break

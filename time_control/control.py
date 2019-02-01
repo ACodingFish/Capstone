@@ -9,9 +9,7 @@ while True:
     elif(key_msg[:5].lower() == "print"):
         for servos in servo_controller.servo_list:
             print(servos.index, " ", servos.current_angle, " ", servos.target_angle)
-    elif(key_msg[:4].lower() == "obst"):
-        servo_controller.servos_obstructed = True
-    elif(key_msg[:4].lower() == "obcl"):
-        servo_controller.servos_obstructed = False
+    elif(key_msg[:5].lower() == "fhome"):
+        servo_controller.force_home()
     servo_controller.parse(key_msg)
     
