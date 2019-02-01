@@ -37,20 +37,24 @@ class PI_Servo:
         self.step_length = 1.0 #seconds
         self.step_deg = 1
         self.default_duration = 3.0 #seconds
-        
-        
-    def set_current_angle(self, angle, duration=self.default_duration): #duration is in seconds
+                          
+    def set_current_angle(self, angle, duration=-1): #duration is in seconds
         duration = int(duration)
         angle = int(angle)
+        if (duration < 0):
+            duration = self.default_duration
         if (duration > 0) and (angle > 0):
-            self.target_angle = angle;
-            print(self.target_angle)
-            print(self.current_angle)
-            if (angle < self.current_angle):
-                self.incrementing = False
-            else:
-                self.incrementing = True
-            self.step_length = duration*self.step_deg/abs(self.target_angle - self.current_angle) #step_duration = duration/(distance/step_distance)
+            distance = abs(angle - self.current_angle)
+            if (distance > 0):
+                self.target_angle = angle;
+                print(self.target_angle)
+                print(self.current_angle)
+                if (angle < self.current_angle):
+                    self.incrementing = False
+                else:
+                    self.incrementing = True
+                self.step_length = duration*self.step_deg/distance #step_duration = duration/(distance/step_distance)
+                #elf.last_step_time = time.time()
         else:
             print("Invalid duration or angle")
         
@@ -66,7 +70,7 @@ class PI_Servo:
             print("Invalid Speed or Angle")
         
     def set_default_duration(self, duration):
-        duration = int(duration)
+        duration = float(duration)
         if (duration > 0):
             self.default_duration = duration
         else:
@@ -87,9 +91,9 @@ class PI_Servo:
         self.target_angle = self.current_angle
         
     def force_home(self): # be careful with this as it may damage equipment or persons if they are in the robot's path
-        self.current_angle = home_pos-1
-        self.prev_angle = home_pos-1
-        self.target_angle = home_pos
+        self.current_angle = self.home-1
+        self.prev_angle = self.home-1
+        self.target_angle = self.home
     
     def time_since_step(self):
         return (time.time() - self.last_step_time)
@@ -128,16 +132,17 @@ class PI_ServoController:
             print("Servos at Max Capacity")
             
     def set_movement_duration(self, duration):
-        print("Setting duration to: ", duration)
-        duration = int(duration)
+        
+        duration = float(duration)/1000
+        print("Setting duration to: ", duration, "s")
         for servos in self.servo_list:
             servos.set_default_duration(duration)
     
     def set_movement_step_deg(self, deg):
-        print("Setting speed to: ", deg)
-            deg = int(deg)
-            for servos in self.servo_list:
-                servos.set_step_deg(deg)
+        print("Setting step (deg) to: ", deg)
+        deg = int(deg)
+        for servos in self.servo_list:
+            servos.set_step_deg(deg)
             
     def go_home(self):
         for servos in self.servo_list:
@@ -192,7 +197,6 @@ class PI_ServoController:
         #pre_loop_time = 0
         while True:
             #print((time.time()-pre_loop_time)%1.0)
-            time.sleep(.05)
             if (self.servos_controlled == True):
                 if (self.servos_obstructed == False):
                     for servos in self.servo_list:
@@ -202,12 +206,12 @@ class PI_ServoController:
                                 servos.reset_time()
                                 servos.prev_angle = servos.current_angle #update prev angle
                                 if (servos.incrementing == True):
-                                    servos.current_angle += self.step_deg
-                                    if (servos.current_angle >= servos.target_angle):
+                                    servos.current_angle += servos.step_deg
+                                    if (servos.current_angle > servos.target_angle):
                                         servos.current_angle = servos.target_angle
                                 else:
-                                    servos.current_angle -= self.step_deg
-                                    if (servos.current_angle <= servos.target_angle):
+                                    servos.current_angle -= servos.step_deg
+                                    if (servos.current_angle < servos.target_angle):
                                         servos.current_angle = servos.target_angle 
                                 self.kit.servo[servos.index].angle = int(servos.current_angle)
                                 print("Servo[", servos.index,"] at: ", servos.current_angle)
