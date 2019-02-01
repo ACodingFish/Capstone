@@ -35,6 +35,7 @@ class PI_Servo:
         self.force_home()
         self.last_step_time = time.time()
         self.step_length = 1.0
+        self.step_deg = 1
         
         
     def set_current_angle(self, angle, duration=3.0):
@@ -45,7 +46,7 @@ class PI_Servo:
             self.incrementing = False
         else:
             self.incrementing = True
-        self.step_length = duration/abs(self.target_angle - self.current_angle)
+        self.step_length = duration*self.step_deg/abs(self.target_angle - self.current_angle) #step_duration = duration/(distance/step_distance)
         
     def set_current_angle_w_speed(self, angle, speed):  #speed is in deg/sec
         #speed = distance/duration
@@ -144,7 +145,6 @@ class PI_ServoController:
             
     def servo_manager_thread(self):
         #could delay here to protect on startup.
-        step_deg = 1
         #pre_loop_time = 0
         while True:
             #print((time.time()-pre_loop_time)%1.0)
@@ -158,11 +158,11 @@ class PI_ServoController:
                                 servos.reset_time()
                                 servos.prev_angle = servos.current_angle #update prev angle
                                 if (servos.incrementing == True):
-                                    servos.current_angle += step_deg
+                                    servos.current_angle += self.step_deg
                                     if (servos.current_angle >= servos.target_angle):
                                         servos.current_angle = servos.target_angle
                                 else:
-                                    servos.current_angle -= step_deg
+                                    servos.current_angle -= self.step_deg
                                     if (servos.current_angle <= servos.target_angle):
                                         servos.current_angle = servos.target_angle 
                                 self.kit.servo[servos.index].angle = int(servos.current_angle)
