@@ -34,25 +34,44 @@ class PI_Servo:
         self.incrementing = False
         self.force_home()
         self.last_step_time = time.time()
-        self.step_length = 1.0
+        self.step_length = 1.0 #seconds
         self.step_deg = 1
+        self.default_duration = 3.0 #seconds
         
         
-    def set_current_angle(self, angle, duration=3.0):
-        self.target_angle = angle;
-        print(self.target_angle)
-        print(self.current_angle)
-        if (angle < self.current_angle):
-            self.incrementing = False
+    def set_current_angle(self, angle, duration=self.default_duration): #duration is in seconds
+        if (duration > 0) and (angle > 0):
+            self.target_angle = angle;
+            print(self.target_angle)
+            print(self.current_angle)
+            if (angle < self.current_angle):
+                self.incrementing = False
+            else:
+                self.incrementing = True
+            self.step_length = duration*self.step_deg/abs(self.target_angle - self.current_angle) #step_duration = duration/(distance/step_distance)
         else:
-            self.incrementing = True
-        self.step_length = duration*self.step_deg/abs(self.target_angle - self.current_angle) #step_duration = duration/(distance/step_distance)
+            print("Invalid duration or angle")
         
     def set_current_angle_w_speed(self, angle, speed):  #speed is in deg/sec
         #speed = distance/duration
         #distance/speed = duration
-        duration = abs(angle - self.current_angle)/speed
-        self.set_current_angle(angle, duration)
+        if (angle > 0) and (speed > 0):
+            duration = abs(angle - self.current_angle)/speed
+            self.set_current_angle(angle, duration)
+        else:
+            print("Invalid Speed or Angle")
+        
+    def set_default_duration(self, duration):
+        if (duration > 0):
+            self.default_duration = duration
+        else:
+            print("Invalid duration: ", duration)
+            
+    def set_step_deg (self, step_deg):
+        if (step_deg > 0):
+            self.step_deg = step_deg
+        else:
+            print("Invalid step value: ", step_deg)
         
     def set_obstruction(self):
         self.current_angle = self.prev_angle
