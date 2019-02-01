@@ -33,9 +33,11 @@ class PI_Servo:
         self.target_angle = home_pos
         self.incrementing = False
         self.force_home()
+        self.last_step_time = time.time()
+        self.step_length = 1.0
         
         
-    def set_current_angle(self, angle):
+    def set_current_angle(self, angle, duration=3.0):
         self.target_angle = angle;
         print(self.target_angle)
         print(self.current_angle)
@@ -43,6 +45,13 @@ class PI_Servo:
             self.incrementing = False
         else:
             self.incrementing = True
+        self.step_length = duration/abs(self.target_angle - self.current_angle)
+        
+    def set_current_angle_w_speed(self, angle, speed):  #speed is in deg/sec
+        #speed = distance/duration
+        #distance/speed = duration
+        duration = abs(angle - self.current_angle)/speed
+        self.set_current_angle(angle, duration)
         
     def set_obstruction(self):
         self.current_angle = self.prev_angle
@@ -55,6 +64,12 @@ class PI_Servo:
         self.current_angle = home_pos-1
         self.prev_angle = home_pos-1
         self.target_angle = home_pos
+    
+    def time_since_step(self):
+        return (time.time() - self.last_step_time)
+        
+    def reset_time(self):
+        self.last_step_time = time.time()
         
     
 class PI_ServoController:
@@ -139,17 +154,19 @@ class PI_ServoController:
                     for servos in self.servo_list:
                         if (servos.current_angle != servos.target_angle):
                             #if there is no obstruction
-                            servos.prev_angle = servos.current_angle
-                            if (servos.incrementing == True):
-                                servos.current_angle += step_deg
-                                if (servos.current_angle >= servos.target_angle):
-                                    servos.current_angle = servos.target_angle
-                            else:
-                                servos.current_angle -= step_deg
-                                if (servos.current_angle <= servos.target_angle):
-                                    servos.current_angle = servos.target_angle 
-                            self.kit.servo[servos.index].angle = int(servos.current_angle)
-                            print("Servo[", servos.index,"] at: ", servos.current_angle)
+                            if (servos.time_since_step() > servos.step_length):
+                                servos.reset_time()
+                                servos.prev_angle = servos.current_angle #update prev angle
+                                if (servos.incrementing == True):
+                                    servos.current_angle += step_deg
+                                    if (servos.current_angle >= servos.target_angle):
+                                        servos.current_angle = servos.target_angle
+                                else:
+                                    servos.current_angle -= step_deg
+                                    if (servos.current_angle <= servos.target_angle):
+                                        servos.current_angle = servos.target_angle 
+                                self.kit.servo[servos.index].angle = int(servos.current_angle)
+                                print("Servo[", servos.index,"] at: ", servos.current_angle)
                 else:
                             # take servo obstructed action
                     for servos in self.servo_list:
