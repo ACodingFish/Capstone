@@ -198,7 +198,7 @@ class PI_ServoController:
                     for servos in self.servo_list:
                         if (servos.current_angle != servos.target_angle):
                             #if there is no obstruction
-                            if (servos.time_since_step() > servos.step_length):
+                            if (servos.time_since_step() >= servos.step_length):
                                 servos.reset_time()
                                 servos.prev_angle = servos.current_angle #update prev angle
                                 if (servos.incrementing == True):
