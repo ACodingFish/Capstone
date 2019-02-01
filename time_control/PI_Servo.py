@@ -22,15 +22,15 @@ if (num_args == 2):
     
 class PI_Servo:
     def __init__(self, index, range_deg, home_pos, max_pos, min_pos):
-        self.index = index
-        self.range = range_deg
-        self.max_pos = max_pos
-        self.min_pos = min_pos
-        self.home = home_pos
+        self.index = int(index)
+        self.range = int(range_deg)
+        self.max_pos = int(max_pos)
+        self.min_pos = int(min_pos)
+        self.home = int(home_pos)
         #make a force home
-        self.current_angle = home_pos
-        self.prev_angle = home_pos
-        self.target_angle = home_pos
+        self.current_angle = int(home_pos)
+        self.prev_angle = int(home_pos)
+        self.target_angle = int(home_pos)
         self.incrementing = False
         self.force_home()
         self.last_step_time = time.time()
@@ -40,6 +40,8 @@ class PI_Servo:
         
         
     def set_current_angle(self, angle, duration=self.default_duration): #duration is in seconds
+        duration = int(duration)
+        angle = int(angle)
         if (duration > 0) and (angle > 0):
             self.target_angle = angle;
             print(self.target_angle)
@@ -55,6 +57,8 @@ class PI_Servo:
     def set_current_angle_w_speed(self, angle, speed):  #speed is in deg/sec
         #speed = distance/duration
         #distance/speed = duration
+        speed = int(speed)
+        angle = int(angle)
         if (angle > 0) and (speed > 0):
             duration = abs(angle - self.current_angle)/speed
             self.set_current_angle(angle, duration)
@@ -62,12 +66,14 @@ class PI_Servo:
             print("Invalid Speed or Angle")
         
     def set_default_duration(self, duration):
+        duration = int(duration)
         if (duration > 0):
             self.default_duration = duration
         else:
             print("Invalid duration: ", duration)
             
     def set_step_deg (self, step_deg):
+        step_deg = int(step_deg)
         if (step_deg > 0):
             self.step_deg = step_deg
         else:
@@ -121,6 +127,18 @@ class PI_ServoController:
         else:
             print("Servos at Max Capacity")
             
+    def set_movement_duration(self, duration):
+        print("Setting duration to: ", duration)
+        duration = int(duration)
+        for servos in self.servo_list:
+            servos.set_default_duration(duration)
+    
+    def set_movement_step_deg(self, deg):
+        print("Setting speed to: ", deg)
+            deg = int(deg)
+            for servos in self.servo_list:
+                servos.set_step_deg(deg)
+            
     def go_home(self):
         for servos in self.servo_list:
             #self.kit.servo[servos.index].angle = int(servos.home)
@@ -140,13 +158,20 @@ class PI_ServoController:
                 else:#elif (index>0):           
                     #print("\tIndex: ",int(command[:index]),"\tString: ",command[index:])
                     print("Command:",command[index:].replace('\n',''))
-                    servo_index = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "home":-2, "obst":-3, "obcl":-4}.get(command[index:].replace('\n',''), -1)
+                    servo_index = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "home":-2, "obst":-3, "obcl":-4, "sd":-5, "sdeg":-6, "print":-7}.get(command[index:].replace('\n','').lower(), -1)
                     if servo_index == -2:
                         self.go_home()
                     elif servo_index == -3:
-                        servo_controller.servos_obstructed = True
+                        self.servos_obstructed = True
                     elif servo_index == -4:
-                        servo_controller.servos_obstructed = False
+                        self.servos_obstructed = False
+                    elif (servo_index == -5) and (index > 0):
+                        self.set_movement_duration(command[:index])
+                    elif (servo_index == -6) and (index > 0):
+                        self.set_movement_step_deg(command[:index])
+                    elif servo_index == -7:
+                        for servos in self.servo_list:
+                            print("[",servos.index, "]: ", servos.current_angle, " TARGET:", servos.target_angle)
                     elif (servo_index >=0 and index >0):
                         self.set_servo_position(servo_index, command[:index]) # servo_index, servo_position
                     break
