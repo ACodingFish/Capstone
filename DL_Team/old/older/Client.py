@@ -18,7 +18,7 @@ if (num_args == 3):
     except:
         pass
 
-cli = PI_Cli(ip_addr, port, False)
+cli = PI_Cli(ip_addr, port)
 
 while True:
     key_msg = sys.stdin.readline()

@@ -48,7 +48,6 @@ class PI_Srvr:
                 except:
                     clients.close()
                     self.remove(clients)
-                    
 
     def remove(self, old_client):
         if old_client in self.clients_list:
