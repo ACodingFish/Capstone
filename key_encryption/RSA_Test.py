@@ -2,9 +2,7 @@ from PI_RSA import *
 
 rsa = PI_RSA()
 
-public = rsa.get_public().split(",")
-
-rsa2 = PI_RSA_SN(int(public[0]), int(public[1]))
+rsa2 = PI_RSA_SN(rsa.get_public())
 
 cipher = rsa.encrypt("Hello".encode('utf-8'))
 print(rsa.decrypt(cipher).decode('utf-8'))

@@ -21,8 +21,9 @@ class PI_RSA:
         return str(self.key.n) +',' + str(self.key.e)
 
 class PI_RSA_SN:
-    def __init__(self, n, e):
-        tup = (n, e);
+    def __init__(self, public_str): # public_str is in format n,e
+        public = public_str.split(",")
+        tup = (int(public[0]), int(public[1]));
         self.key = RSA.construct(tup)
         self.cipher = PKCS1_OAEP.new(self.key)
     
