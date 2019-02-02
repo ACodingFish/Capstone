@@ -5,6 +5,7 @@ import socket
 import select
 import sys
 import os
+from PI_RSA import *
 from PI_Servo import *
 
 if sys.version_info[0] == 3:
@@ -14,6 +15,9 @@ else:
 
 class PI_Cli:
     def __init__(self, ip_addr, port, is_robot):
+        self.encrypted = True
+        if (self.encrypted == True):
+            self.RSA = PI_RSA()
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         #self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.max_msg_size = 2048
@@ -24,14 +28,15 @@ class PI_Cli:
             os._exit(0)
             
         self.in_msg = ""
-        self.out_msg = ""
         
         self.is_robot = is_robot
         if (self.is_robot == True):
             self.servo_controller = PI_ServoController(16) # Start servo controller with 16 channels
         
-        
-        start_new_thread(self.Recv_Thread,())
+        if (self.encrypted == True):
+            start_new_thread(self.Init_Thread,())
+        else:
+            start_new_thread(self.Recv_Thread,())
         #start_new_thread(self.Send_Thread,())
 
     def Recv_Thread(self):
@@ -45,11 +50,42 @@ class PI_Cli:
                         self.servo_controller.parse(self.in_msg)
                     print(self.in_msg)
                     
+    def Init_Thread(self):
+        if (self.encrypted == True):
+            connected = False
+            enc = False
+            while connected == False:
+                sockets_list = [self.server]
+                read_sockets, write_sockets, error_sockets = select.select(sockets_list, sockets_list,[])
+                for socks in read_sockets:
+                    if socks == self.server:
+                        if enc == False:
+                            message = socks.recv(self.max_msg_size).decode('utf-8')
+                            print("key",message,"key")
+                            self.svr_RSA = PI_RSA_SN(message) #could send that i am the robot?
+                            if (self.svr_RSA.initialized == False):
+                                print("INVALID SERVER KEY.")
+                                os._exit(0)
+                            #self.Send_Msg(self.svr_RSA.encrypt(self.RSA.get_public()))
+                            self.Send_Msg(self.RSA.get_public())
+                            enc = True
+                        else:
+                            message = self.RSA.decrypt(socks.recv(self.max_msg_size))
+                            self.AES_key = message
+                            print(message) #AES KEY
+                            connected = True
+                            start_new_thread(self.Recv_Thread,())
+                        
+            
+        else:
+            start_new_thread(self.Recv_Thread,())
+                    
     def Send_Msg(self, message):
         sockets_list = [self.server]
         read_sockets, write_sockets, error_sockets = select.select(sockets_list,sockets_list,[])
         for socks in write_sockets:
-                if socks == self.server:
-                    self.out_msg = message
-                    self.server.send(self.out_msg.encode('utf-8'))
+            if socks == self.server:
+                if (type(message) != bytes):
+                    message = message.encode('utf-8')
+                self.server.send(message)
                     
