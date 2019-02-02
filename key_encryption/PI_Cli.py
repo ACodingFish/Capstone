@@ -6,6 +6,7 @@ import select
 import sys
 import os
 from PI_RSA import *
+from PI_AES import *
 from PI_Servo import *
 
 if sys.version_info[0] == 3:
@@ -61,7 +62,6 @@ class PI_Cli:
                     if socks == self.server:
                         if enc == False:
                             message = socks.recv(self.max_msg_size).decode('utf-8')
-                            print("key",message,"key")
                             self.svr_RSA = PI_RSA_SN(message) #could send that i am the robot?
                             if (self.svr_RSA.initialized == False):
                                 print("INVALID SERVER KEY.")
@@ -70,9 +70,10 @@ class PI_Cli:
                             self.Send_Msg(self.RSA.get_public())
                             enc = True
                         else:
-                            message = self.RSA.decrypt(socks.recv(self.max_msg_size))
-                            self.AES_key = message
-                            print(message) #AES KEY
+                            msg = socks.recv(self.max_msg_size)
+                            aes_key = self.RSA.decrypt(msg)
+                            self.AES_key = aes_key
+                            print(aes_key) #AES KEY
                             connected = True
                             start_new_thread(self.Recv_Thread,())
                         

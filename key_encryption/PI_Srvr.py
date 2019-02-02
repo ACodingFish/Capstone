@@ -7,12 +7,16 @@ import sys
 import os
 import traceback
 from PI_RSA import *
+from PI_AES import *
 
 if sys.version_info[0] == 3:
     from _thread import *
 else:
     from thread import *
 
+#class PI_CL_AES:
+#    def __init__(self, client, key)
+    
 class PI_Srvr:
     def __init__(self, port_num):
         self.encrypted = True
@@ -52,21 +56,19 @@ class PI_Srvr:
                 try:
                     if (type(message) != bytes):
                         message = message.encode('utf-8')
-                    clients.send(message)
+                    self.send_msg(message, clients)
                 except:
                     clients.close()
                     self.remove(clients)
                     
     def send_msg(self, message, client):
-        for clients in self.clients_list:
-            if (clients==client):
-                try:
-                    if (type(message) != bytes):
-                        message = message.encode('utf-8')
-                    client.send(message)
-                except:
-                    client.close()
-                    self.remove(client)
+        try:
+            if (type(message) != bytes):
+                message = message.encode('utf-8')
+            client.send(message)
+        except:
+            client.close()
+            self.remove(client)
                     
 
     def remove(self, old_client):
@@ -97,13 +99,11 @@ class PI_Srvr:
                     if message:
                         if (len(message) > 0):
                             #message = self.RSA.decrypt(message)
-                            print(message)
-                            cli_rsa = PI_RSA_SN(message)
-                            print("before before")
-                            if (cli_rsa.initialized == True):
-                                aes_key = "AES KEY" #woo!
-                                print("before")
-                                key_msg = cli_rsa.encrypt(aes_key)
+                            cli_RSA = PI_RSA_SN(message)
+                            if (cli_RSA.initialized == True):
+                                cli_AES = PI_AES()
+                                aes_key = cli_AES.get_key()#"AES KEY" #woo!
+                                key_msg = cli_RSA.encrypt(aes_key)
                                 self.send_msg(key_msg, client)
                                 connected = True
                                 print(aes_key)

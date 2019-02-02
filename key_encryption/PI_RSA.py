@@ -18,8 +18,9 @@ class PI_RSA:
     
     def decrypt(self, msg):
         if (type(msg) != bytes):
-            msg = msg.decode('utf-8')
-        return self.cipher.decrypt(msg)
+            msg = msg.encode('utf-8')
+        msg = self.cipher.decrypt(msg)
+        return msg
     
     def get_public(self):
         return str(self.key.n) +',' + str(self.key.e)
