@@ -5,6 +5,31 @@ import os
 from Crypto import Random
 from Crypto.Cipher import AES
 
+class PI_KEY_AES:
+    def __init__(self):
+        self.clients = []
+        self.keys = []
+        
+    def add(self, client, key):
+        self.clients.append(client)
+        self.keys.append(key)
+        print("key",key)
+    
+    def remove(self, client):
+        for i in range (0, len(self.clients)):
+            if client == self.clients[i]:
+                del self.clients[i]
+                del self.keys[i]
+                return True
+        return False
+    
+    def get_key(self, client):
+        for i in range(0, len(self.clients)):
+            if client == self.clients[i]:
+                return self.keys[i]
+            
+        return False
+
 class PI_AES:
     def __init__(self, key = "$$$nothing$$$"):
         if (key == "$$$nothing$$$"):

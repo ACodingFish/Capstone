@@ -5,6 +5,7 @@ import socket
 import select
 import sys
 import os
+import time
 from PI_RSA import *
 from PI_AES import *
 from PI_Servo import *
@@ -16,9 +17,13 @@ else:
 
 class PI_Cli:
     def __init__(self, ip_addr, port, is_robot):
-        self.encrypted = True
-        if (self.encrypted == True):
-            self.RSA = PI_RSA()
+        self.encrypt = True
+        self.encrypted = False
+        self.RSA = PI_RSA()
+        print(self.RSA.get_public())
+        self.AES_key = 0
+        self.AES = 0
+        
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         #self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.max_msg_size = 2048
@@ -34,7 +39,7 @@ class PI_Cli:
         if (self.is_robot == True):
             self.servo_controller = PI_ServoController(16) # Start servo controller with 16 channels
         
-        if (self.encrypted == True):
+        if (self.encrypt == True):
             start_new_thread(self.Init_Thread,())
         else:
             start_new_thread(self.Recv_Thread,())
@@ -46,36 +51,37 @@ class PI_Cli:
             read_sockets, write_sockets, error_sockets = select.select(sockets_list,sockets_list,[])
             for socks in read_sockets:
                 if socks == self.server:
-                    self.in_msg = socks.recv(self.max_msg_size).decode('utf-8')
+                    self.in_msg = socks.recv(self.max_msg_size)
+                    if (self.encrypt == True):
+                        self.in_msg = self.AES.decrypt(self.in_msg)
+                        if type(self.in_msg) != str:
+                            self.in_msg = self.in_msg.decode('utf-8')
+                    else:    
+                        self.in_msg = self.in_msg.decode('utf-8')
                     if (self.is_robot == True):
                         self.servo_controller.parse(self.in_msg)
                     print(self.in_msg)
                     
     def Init_Thread(self):
-        if (self.encrypted == True):
+        time.sleep(.5)
+        if (self.encrypt == True):
             connected = False
-            enc = False
+
+            print("Startl")
             while connected == False:
-                sockets_list = [self.server]
-                read_sockets, write_sockets, error_sockets = select.select(sockets_list, sockets_list,[])
-                for socks in read_sockets:
-                    if socks == self.server:
-                        if enc == False:
-                            message = socks.recv(self.max_msg_size).decode('utf-8')
-                            self.svr_RSA = PI_RSA_SN(message) #could send that i am the robot?
-                            if (self.svr_RSA.initialized == False):
-                                print("INVALID SERVER KEY.")
-                                os._exit(0)
-                            #self.Send_Msg(self.svr_RSA.encrypt(self.RSA.get_public()))
-                            self.Send_Msg(self.RSA.get_public())
-                            enc = True
-                        else:
-                            msg = socks.recv(self.max_msg_size)
-                            aes_key = self.RSA.decrypt(msg)
-                            self.AES_key = aes_key
-                            print(aes_key) #AES KEY
-                            connected = True
-                            start_new_thread(self.Recv_Thread,())
+                #self.Send_Msg(self.svr_RSA.encrypt(self.RSA.get_public()))
+                self.Send_Msg(self.RSA.get_public())
+                print(self.RSA.get_public())
+
+                msg = self.server.recv(self.max_msg_size)
+                aes_key = self.RSA.decrypt(msg)
+                self.AES_key = aes_key
+                print(aes_key) #AES KEY
+                connected = True
+                self.AES = PI_AES(self.AES_key)
+                self.encrypted = True
+                print("Verification Successful")
+                start_new_thread(self.Recv_Thread,())
                         
             
         else:
@@ -88,5 +94,7 @@ class PI_Cli:
             if socks == self.server:
                 if (type(message) != bytes):
                     message = message.encode('utf-8')
+                if self.encrypted == True:
+                    message = self.AES.encrypt(message)
                 self.server.send(message)
                     
