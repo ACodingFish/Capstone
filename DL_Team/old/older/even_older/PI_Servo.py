@@ -27,30 +27,19 @@ class PI_Servo:
         self.max_pos = max_pos
         self.min_pos = min_pos
         self.home = home_pos
-        #make a force home
-        self.current_angle = home_pos-1
-        self.prev_angle = home_pos-1
+        self.current_angle = home_pos
+        self.prev_angle = home_pos
         self.target_angle = home_pos
-        self.incrementing = False
         
     def set_current_angle(self, angle):
         self.target_angle = angle;
-        print(self.target_angle)
-        print(self.current_angle)
-        if (angle < self.current_angle):
-            self.incrementing = False
-        else:
-            self.incrementing = True
         
-    def set_obstruction(self):
+    def set_obstruction(self, angle):
         self.current_angle = self.prev_angle
         self.target_angle = self.prev_angle
     
-    def set_hard_stop(self):
-        self.target_angle = self.current_angle
-    
 class PI_ServoController:
-    def __init__(self, max_channels):
+    def __init__(self, max_channels,):
         self.servos_controlled = False;
         self.max_channels = max_channels
         self.kit = ServoKit(channels=self.max_channels)
@@ -67,7 +56,6 @@ class PI_ServoController:
             self.add_servo(sv[0],sv[1], sv[2], sv[3])
         
         start_new_thread(self.servo_manager_thread,())  #start thread
-        self.servos_obstructed = False
         self.servos_controlled = True
         
     def add_servo(self, range_deg, home_pos, max_pos, min_pos):
@@ -89,14 +77,11 @@ class PI_ServoController:
             for character in command:
                 if (character.isdigit()): 
                     index += 1
-                else:#elif (index>0):           
+                elif (index>0):           
                     #print("\tIndex: ",int(command[:index]),"\tString: ",command[index:])
                     print("Command:",command[index:].replace('\n',''))
-                    servo_index = {"set_current_anglea": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "home":-2}.get(command[index:].replace('\n',''), -1)
-                    if servo_index == -2:
-                        self.go_home()
-                    elif (servo_index >=0 and index >0):
-                        self.set_servo_position(servo_index, command[:index]) # servo_index, servo_position
+                    servo_index = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5}.get(command[index:].replace('\n',''), -1) 
+                    self.set_servo_position(servo_index, command[:index]) # servo_index, servo_position
                     break
     
     def set_servo_position(self, index, new_pos):
@@ -111,31 +96,11 @@ class PI_ServoController:
             print("Invalid Index: ", index)
             
     def servo_manager_thread(self):
-        #could delay here to protect on startup.
-        step_deg = 1
-        #pre_loop_time = 0
         while True:
-            #print((time.time()-pre_loop_time)%1.0)
-            time.sleep(.05)
             if (self.servos_controlled == True):
-                if (self.servos_obstructed == False):
-                    for servos in self.servo_list:
-                        if (servos.current_angle != servos.target_angle):
-                            #if there is no obstruction
-                            servos.prev_angle = servos.current_angle
-                            if (servos.incrementing == True):
-                                servos.current_angle += step_deg
-                                if (servos.current_angle >= servos.target_angle):
-                                    servos.current_angle = servos.target_angle
-                            else:
-                                servos.current_angle -= step_deg
-                                if (servos.current_angle <= servos.target_angle):
-                                    servos.current_angle = servos.target_angle 
-                            self.kit.servo[servos.index].angle = int(servos.current_angle)
-                            print("Servo[", servos.index,"] at: ", servos.current_angle)
-                else:
-                            # take servo obstructed action
-                    for servos in self.servo_list:
-                        servos.set_obstruction()
+                for servos in self.servo_list:
+                    if (servos.current_angle != servos.target_angle):
+                        #if there is no obstruction
                         self.kit.servo[servos.index].angle = int(servos.target_angle)
-                #pre_loop_time = time.time()
+                        servos.prev_angle = servos.current_angle
+                        servos.current_angle = servos.target_angle
