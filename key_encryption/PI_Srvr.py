@@ -118,17 +118,17 @@ class PI_Srvr:
                         if (len(message) > 0):
                             #message = self.RSA.decrypt(message)
                             cli_RSA = PI_RSA_SN(message)
-                            print(message)
+                            #print(message)
                             cli_AES = PI_AES()
                             aes_key = cli_AES.get_key()#"AES KEY" #woo!
                             key_msg = cli_RSA.encrypt(aes_key)
                             self.send_msg(key_msg, client)
                             self.AES_KEYS.add(client, aes_key)
                             connected = True
-                            print(aes_key)
+                            #print(aes_key)
                         
                     if connected == True:
-                        print("Verification Successful.")
+                        print("Client Verification Successful.")
                         start_new_thread(self.client_thread,(client,addr))
                     else:
                         self.remove(client)
