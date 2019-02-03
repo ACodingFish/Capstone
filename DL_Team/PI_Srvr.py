@@ -15,8 +15,8 @@ else:
     from thread import *
     
 class PI_Srvr:
-    def __init__(self, port_num):
-        self.encrypted = True
+    def __init__(self, port_num, is_encrypted=True):
+        self.encrypted = is_encrypted
         self.RSA = PI_RSA()
         self.AES_KEYS = PI_KEY_AES()
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

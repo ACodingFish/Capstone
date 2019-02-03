@@ -1,4 +1,4 @@
-#Server program
+#Unencrypted Server program
 import sys
 import os
 from PI_Cli import *
@@ -18,7 +18,7 @@ if (num_args == 3):
     except:
         pass
 
-cli = PI_Cli(ip_addr, port)
+cli = PI_Cli(ip_addr, port, False, False)
 
 while True:
     key_msg = sys.stdin.readline()

@@ -1,6 +1,9 @@
 #Client program - Based on chatroom program
 #Example found at:
 #www.geeksforgeeks.org/simple-chat-room-using-python/amp/
+
+#requires installation of pycrypto (or pycryptodome)
+#requires installation of adafruit servokit (adafruit-circuitpython-servokit)
 import socket
 import select
 import sys
@@ -17,8 +20,8 @@ else:
     from thread import *
 
 class PI_Cli:
-    def __init__(self, ip_addr, port, is_robot):
-        self.encrypt = True
+    def __init__(self, ip_addr, port, is_robot=False, is_encrypted=True):
+        self.encrypt = is_encrypted
         self.encrypted = False
         self.RSA = PI_RSA()
         #print(self.RSA.get_public())
