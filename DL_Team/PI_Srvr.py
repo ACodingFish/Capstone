@@ -67,9 +67,12 @@ class PI_Srvr:
                 try:
                     if (type(message) != bytes):
                         message = message.encode('utf-8')
-                    self.send_msg(message, clients)
+                    if (self.encrypted == True):
+                        if (type(self.AES_KEYS.get_key(clients)) != bool):
+                            self.send_msg(message, clients)
+                    else:
+                        self.send_msg(message, clients)
                 except:
-                    clients.close()
                     self.remove(clients)
                     
     def send_msg(self, message, client):
@@ -83,12 +86,12 @@ class PI_Srvr:
                     message = aes.encrypt(message)
             client.send(message)
         except:
-            client.close()
             self.remove(client)
                     
 
     def remove(self, old_client):
         print("Removing Client")
+        old_client.close()
         if old_client in self.clients_list:
             self.clients_list.remove(old_client)
             if (self.encrypted == True):
@@ -110,7 +113,8 @@ class PI_Srvr:
     def init_client_thread(self, client, addr):
         if (self.encrypted == True):
             connected = False
-            while connected == False:
+            thread_open = True
+            while (connected == False) and (thread_open == True):
                 try:
                     message = client.recv(self.max_msg_size) #get rsa key from client
                 
@@ -131,11 +135,13 @@ class PI_Srvr:
                         print("Client Verification Successful.")
                         start_new_thread(self.client_thread,(client,addr))
                     else:
+                        thread_open = False
                         self.remove(client)
                 except Exception as e:
                     print(e)
                     #traceback.print_exc()
-                    continue
+                    self.remove(client)
+                    thread_open = False
         else:
             start_new_thread(self.client_thread,(client,addr))
         
