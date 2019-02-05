@@ -47,13 +47,14 @@ class PI_Servo:
             distance = abs(angle - self.current_angle)
             if (distance > 0):
                 self.target_angle = angle;
-                print(self.target_angle)
-                print(self.current_angle)
+
                 if (angle < self.current_angle):
                     self.incrementing = False
                 else:
                     self.incrementing = True
                 self.step_length = duration*self.step_deg/distance #step_duration = duration/(distance/step_distance)
+                print(self.target_angle)
+                print(self.current_angle)
                 #elf.last_step_time = time.time()
         else:
             print("Invalid duration or angle")

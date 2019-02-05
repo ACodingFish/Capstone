@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 #Unencrypted Server program
 import sys
 import os
