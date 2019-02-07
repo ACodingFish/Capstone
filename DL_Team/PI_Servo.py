@@ -27,7 +27,7 @@ class PI_Servo:
         self.max_pos = int(max_pos)
         self.min_pos = int(min_pos)
         self.home = int(home_pos)
-        #make a force home
+
         self.current_angle = int(home_pos)
         self.prev_angle = int(home_pos)
         self.target_angle = int(home_pos)
@@ -114,21 +114,22 @@ class PI_ServoController:
         # servo 1 - right to left
         # servo 2 - up to down
         # servo 3 - down to up
-        # servo ##MISSING## 4 - ????
-        # servo 5 - right to left
-        # servo 6 - 44 (closed) 10 (open)
+        # servo ##MISSING## X - ????
+        # servo 4 - right to left
+        # servo 5 - 44 (closed) 10 (open)
         for sv in sv_info:
             self.add_servo(sv[0],sv[1], sv[2], sv[3])
         
         start_new_thread(self.servo_manager_thread,())  #start thread
-        self.servos_obstructed = False
+        self.servos_obstructed = False #pay attention to this --> may cause issues later
         self.servos_controlled = True
         
     def add_servo(self, range_deg, home_pos, max_pos, min_pos):
         index = len(self.servo_list)
         if (index < self.max_channels):
             self.kit.servo[index].actuation_range = range_deg
-            self.servo_list.append(PI_Servo(index, range_deg, home_pos, max_pos, min_pos))
+            new_servo = PI_Servo(index, range_deg, home_pos, max_pos, min_pos)
+            self.servo_list.append(new_servo)
         else:
             print("Servos at Max Capacity")
             
@@ -220,5 +221,5 @@ class PI_ServoController:
                             # take servo obstructed action
                     for servos in self.servo_list:
                         servos.set_obstruction()
-                        self.kit.servo[servos.index].angle = int(servos.target_angle)
+                        self.kit.servo[servos.index].angle = int(servos.prev_angle)
                 #pre_loop_time = time.time()
