@@ -106,14 +106,34 @@ c.	Configuring Client Parameters
 VI. Operation
 ----------------------------------------
 ----------------------------------------
-a.	Sending Commands
-	i. ###TBD
-b.	Setting Movement Duration (ms)
-	i. ###TBD
-c.	Setting Movement Step (degrees)
-	i. ###TBD
-d.	Sending Multiple Commands
-	i. ###TBD
+a.	Setting up Server
+	i.	The Server program can be launched by entering a port number as a command line argument
+		a. Ex. ./Server.py 10001
+		b. Ex. ./Server.py - This will launch on a default port of 10001
+b.	Setting up Client
+	i.	The Client program can be launched by entering an ip address and a port number as command line arguments
+		a. Ex. ./Client.py 127.0.0.1 10001
+		b. Ex. ./Client.py - This will launch on a default ip of localhost (127.0.0.1) port of 10001
+c.	Setting up RobotClient
+	i.	The Robot Client program is launched similarly to the Client Program
+		a. Ex. ./RobotClient.py 127.0.0.1 10001
+		b. Ex. ./RobotClient.py - This will launch on a default ip of localhost (127.0.0.1) port of 10001
+d.	Sending Commands
+	i.	Using the Socket Server/Client, a command received by the robot client will automatically be sent to the robot.
+e.	Valid Commands
+	i.	Servo Movement - [servoPosition][servoIndex]
+		a. Ex. 20a - Moves servo index 0 to position 20 degrees
+		b. Servos that are currently active are a-f, additional servos will need to be added to parse function in PI_Servo.py
+	ii.	Set Duration - [DurationInMS]sd
+		a. Ex. 1000sd - Sets servo movement duration to 1.0 seconds
+	iii.	Set Step Size (Degrees) - [StepSize]sdeg
+		a. Ex. 5sdeg - Sets servo step size to 5 degrees
+	iv.	Go Home - home
+		a. Tells robot to go home
+f.	Sending Multiple Commands
+	i.	Multiple commands can be sent by separating each command with a comma and a space.
+		a. Ex. 1000sd, 5sdeg, 120a, 20b, 20c, 50d, 80e, 30f
+	ii.	Commands are processed in order.
 
 ----------------------------------------
 ----------------------------------------
@@ -153,4 +173,4 @@ a.	Server hangs on Unencrypted Client Connection
 IX. Change Log
 ----------------------------------------
 ----------------------------------------
-	02/07/2019 	Document Created with
+	02/07/2019 	Initial Document Creation
