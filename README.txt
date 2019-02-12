@@ -95,11 +95,23 @@ V. Configuration
 ----------------------------------------
 ----------------------------------------
 a.	Configuring Servo Initialization Parameters
-	i. ###TBD
+	i.	Step length
+		a. Change the value of step_len in the PI_ServoController __init__ function in PI_Servo.py
+		b. This changes how much the servo moves every step.
+	ii.	Movement Duration
+		a. Change the value of mov_duration in the PI_ServoController __init__ function in PI_Servo.py
+		b. This changes how long it takes for a movement to complete (in seconds)
+	iii.	Adding Servos
+		a. Servos are added in the list sv_info in PI_ServoController __init__ function
+		b. Four parameters are added in a list within the list sv_info.
+		c. The first parameter is the movement range in degrees of the servo.
+		d. The second parameter is the home position in degrees of the servo.
+		e. The third parameter is the maximum degree position of the servo.
+		f. The fourth parameter is the minimum degree position of the servo.
 b.	Configuring Server Parameters
-	i. ###TBD
+	i.	Port parameter is passed by command line, see section IV.a
 c.	Configuring Client Parameters
-	i. ###TBD
+	i.	IP and Port parameters are passed by command line, see section IV.b
 
 ----------------------------------------
 ----------------------------------------
@@ -124,7 +136,7 @@ e.	Valid Commands
 	i.	Servo Movement - [servoPosition][servoIndex]
 		a. Ex. 20a - Moves servo index 0 to position 20 degrees
 		b. Servos that are currently active are a-f, additional servos will need to be added to parse function in PI_Servo.py
-	ii.	Set Duration - [DurationInMS]sd
+	ii.	Set Duration - [DurationInMs]sd
 		a. Ex. 1000sd - Sets servo movement duration to 1.0 seconds
 	iii.	Set Step Size (Degrees) - [StepSize]sdeg
 		a. Ex. 5sdeg - Sets servo step size to 5 degrees
