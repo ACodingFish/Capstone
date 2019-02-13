@@ -3,8 +3,8 @@ read -p "Enter Username: " u_name
 git config --global user.name "$u_name"
 read -p "Enter Email: " u_email
 git config --global user.email "$u_email"
-read -p "Enter password: " u_pw
-read -p "Enter Commit Msg: " send_msg
+read -s -p "Enter password: " u_pw
+read -p $'r'"Enter Commit Msg: " send_msg
 
 git add .
 git commit -m "$send_msg"
