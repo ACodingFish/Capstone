@@ -21,13 +21,13 @@ if (num_args == 2):
     kit.servo[0].angle = int(sys.argv[1]) #move hat 0 to 180 degrees.
     
 class PI_Servo:
-    def __init__(self, index, range_deg, home_pos, max_pos, min_pos):
+    def __init__(self, index, range_deg, home_pos, max_pos, min_pos, step, dur):
         self.index = int(index)
         self.range = int(range_deg)
         self.max_pos = int(max_pos)
         self.min_pos = int(min_pos)
         self.home = int(home_pos)
-        #make a force home
+
         self.current_angle = int(home_pos)
         self.prev_angle = int(home_pos)
         self.target_angle = int(home_pos)
@@ -35,8 +35,8 @@ class PI_Servo:
         self.force_home()
         self.last_step_time = time.time()
         self.step_length = 1.0 #seconds
-        self.step_deg = 1
-        self.default_duration = 3.0 #seconds
+        self.step_deg = step
+        self.default_duration = dur #seconds
                           
     def set_current_angle(self, angle, duration=-1): #duration is in seconds
         duration = int(duration)
@@ -47,13 +47,14 @@ class PI_Servo:
             distance = abs(angle - self.current_angle)
             if (distance > 0):
                 self.target_angle = angle;
-                print(self.target_angle)
-                print(self.current_angle)
+
                 if (angle < self.current_angle):
                     self.incrementing = False
                 else:
                     self.incrementing = True
                 self.step_length = duration*self.step_deg/distance #step_duration = duration/(distance/step_distance)
+                print(self.target_angle)
+                print(self.current_angle)
                 #elf.last_step_time = time.time()
         else:
             print("Invalid duration or angle")
@@ -113,21 +114,24 @@ class PI_ServoController:
         # servo 1 - right to left
         # servo 2 - up to down
         # servo 3 - down to up
-        # servo ##MISSING## 4 - ????
-        # servo 5 - right to left
-        # servo 6 - 44 (closed) 10 (open)
+        # servo ##MISSING## X - ????
+        # servo 4 - right to left
+        # servo 5 - 44 (closed) 10 (open)
+        step_len = 1
+        mov_duration = 3.0
         for sv in sv_info:
-            self.add_servo(sv[0],sv[1], sv[2], sv[3])
+            self.add_servo(sv[0],sv[1], sv[2], sv[3], step_len, mov_duration)
         
         start_new_thread(self.servo_manager_thread,())  #start thread
-        self.servos_obstructed = False
+        self.servos_obstructed = False #pay attention to this --> may cause issues later
         self.servos_controlled = True
         
-    def add_servo(self, range_deg, home_pos, max_pos, min_pos):
+    def add_servo(self, range_deg, home_pos, max_pos, min_pos, step, dur):
         index = len(self.servo_list)
         if (index < self.max_channels):
             self.kit.servo[index].actuation_range = range_deg
-            self.servo_list.append(PI_Servo(index, range_deg, home_pos, max_pos, min_pos))
+            new_servo = PI_Servo(index, range_deg, home_pos, max_pos, min_pos, step, dur)
+            self.servo_list.append(new_servo)
         else:
             print("Servos at Max Capacity")
             
@@ -219,5 +223,5 @@ class PI_ServoController:
                             # take servo obstructed action
                     for servos in self.servo_list:
                         servos.set_obstruction()
-                        self.kit.servo[servos.index].angle = int(servos.target_angle)
+                        self.kit.servo[servos.index].angle = int(servos.prev_angle)
                 #pre_loop_time = time.time()

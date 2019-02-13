@@ -27,7 +27,7 @@ class PI_Srvr:
         
         self.max_msg_size = 2048
         #ip_addr = str(sys.argv[1])
-        self.server.bind(('',self.port)) #was ip_addr
+        self.server.bind(('',self.port)) #was ip_addr #localhost
         self.server.listen(self.max_num_connections)
         
         print("<Server Is Running>")# On: " + ip_addr)
