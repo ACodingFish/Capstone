@@ -5,8 +5,8 @@ read -p "Enter Email: " u_email
 git config --global user.email "$u_email"
 read -p "Enter Commit Msg: " send_msg
 git add .
-git commit --author="$u_name" -m "$send_msg"
-git push http://github.com/TheDemonfish/Capstone master
+git commit -m "$send_msg"
+git push http://github.com/TheDemonfish/Capstone master "$u_name"
 wait ${!}
 echo "done"
 sleep 10
