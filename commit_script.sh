@@ -6,8 +6,7 @@ git config --global user.email "$u_email"
 read -p "Enter Commit Msg: " send_msg
 git add .
 git commit -m "$send_msg"
-git push --set-upstream http://$u_name@github.com/TheDemonfish/Capstone master
-git push --repo http://$u_name@github.com/TheDemonfish/Capstone master
+git push --set-upstream --repo http://$u_name@github.com/TheDemonfish/Capstone master
 
 wait ${!}
 echo "done"$'\r'
