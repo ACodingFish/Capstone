@@ -7,7 +7,7 @@ class PI_ADC:
     def __init__(self):
         self.num_channels = 16
         self.ADC = #insert class here (Somehow pass parameters? or default them?)
-        start_new_thread(monitor_thread,())
+        start_new_thread(self.monitor_thread,())
             
     def monitor_thread(self):
         while True:
@@ -22,5 +22,5 @@ class PI_ADC:
                 self.ADC.adc[i].avg_arr.append(value) # appends new element
                 self.ADC.adc[i].avg = sum(self.ADC.adc[i].avg_arr)/self.length
     
-    def get_adc_value(self, index):
+    def get_adc_avg(self, index):
         return self.ADC.adc[i].avg #should default to 0

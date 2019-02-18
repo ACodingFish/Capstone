@@ -1,4 +1,4 @@
-#Client program - Based on chatroom program
+#Client program - Loosely based on chatroom program
 #Example found at:
 #www.geeksforgeeks.org/simple-chat-room-using-python/amp/
 
@@ -18,8 +18,14 @@ if sys.version_info[0] == 3:
     from _thread import *
 else:
     from thread import *
-
+    
+#   This class is a socket client implementation designed to be used with encryption
 class PI_Cli:
+    #   Initializes the client on localhost
+    #   Requires an input of an ip address
+    #   Requires an input of port number
+    #   Has an optional robot identification flag that defaults to false
+    #   Has an optional encryption flag that defaults to true.
     def __init__(self, ip_addr, port, is_robot=False, is_encrypted=True):
         self.encrypt = is_encrypted
         self.encrypted = False
@@ -48,7 +54,9 @@ class PI_Cli:
         else:
             start_new_thread(self.Recv_Thread,())
         #start_new_thread(self.Send_Thread,())
-
+    
+    #   Starts a receive thread that allows the client to receive messages from a server
+    #   Relays messages to the robotic arm (ROBOT ONLY)
     def Recv_Thread(self):
         try:
             while True:
@@ -71,7 +79,7 @@ class PI_Cli:
             print("Lost connection to Server.")
             os._exit(0)
             
-
+    #   Creates an initialization thread for encryption handshake (ENCRYPTION ONLY)
     def Init_Thread(self):
         try:
         #time.sleep(.5)
@@ -99,7 +107,8 @@ class PI_Cli:
             print("Lost connection to Server.")
             os._exit(0)
             
-                    
+    #   Sends a message to the server
+    #   Requires an input of a message
     def Send_Msg(self, message):
         sockets_list = [self.server]
         read_sockets, write_sockets, error_sockets = select.select(sockets_list,sockets_list,[])

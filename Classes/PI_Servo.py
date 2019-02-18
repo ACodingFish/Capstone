@@ -110,7 +110,7 @@ class PI_ServoController:
         self.kit = ServoKit(channels=self.max_channels)
         self.servo_list = []
         #add servos [[sv1_range, sv1_home, sv1_max_deg, sv1_min_deg], [sv2...],...]
-        sv_info = [[180,90,180,1],[180,30,180,1],[120,90,120,1],[120,60,120,1],[120,44,44,10]]
+        sv_info = [[180,90,180,1],[180,45,135,1],[180,90,180,1],[180,90,180,1],[180,90,180,1],[120,1,40,1]]
         # servo 1 - right to left
         # servo 2 - up to down
         # servo 3 - down to up
@@ -121,6 +121,15 @@ class PI_ServoController:
         mov_duration = 3.0
         for sv in sv_info:
             self.add_servo(sv[0],sv[1], sv[2], sv[3], step_len, mov_duration)
+        for i in range(len(sv_info)):
+            if (sv_info[i][0] == 270):
+                #self.kit.servo[i].set_pulse_width_range(500, 4000) #not accurate yet
+                pass
+            elif (sv_info[i][0] == 180):
+                self.kit.servo[i].set_pulse_width_range(500, 2500)
+            else:
+                self.kit.servo[i].set_pulse_width_range(750, 2000)
+                #pass
         
         start_new_thread(self.servo_manager_thread,())  #start thread
         self.servos_obstructed = False #pay attention to this --> may cause issues later

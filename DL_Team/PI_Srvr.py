@@ -1,4 +1,4 @@
-#Server program - Based on chatroom program
+#Server program - Loosely based on chatroom program
 #Example found at:
 #www.geeksforgeeks.org/simple-chat-room-using-python/amp/
 import socket
@@ -14,7 +14,11 @@ if sys.version_info[0] == 3:
 else:
     from thread import *
     
+#   This class is a socket server implementation designed to be used with encryption
 class PI_Srvr:
+    #   Initializes the server on localhost
+    #   Requires an input of port number
+    #   Has an optional encryption flag that defaults to true.
     def __init__(self, port_num, is_encrypted=True):
         self.encrypted = is_encrypted
         self.RSA = PI_RSA()
@@ -34,6 +38,9 @@ class PI_Srvr:
         #start_new_thread(menu_thread,())
         start_new_thread(self.listening_thread,())
 
+    #   This thread manages the communication with attached clients
+    #   Each client has its own dedicated thread
+    #   Takes in parameters of a client and its address
     def client_thread(self, client, addr):
         thread_open = True
         #client.send("You are now connected.".encode('utf-8'))
@@ -61,6 +68,8 @@ class PI_Srvr:
                 thread_open = False
                 continue
 
+    #   This function relays a message received by a source client to every other client
+    #   It takes parameters of a message and a source client (who sent the message)
     def relay_all(self, message, source_client):
         for clients in self.clients_list:
             if (clients!=source_client):
@@ -74,7 +83,9 @@ class PI_Srvr:
                         self.send_msg(message, clients)
                 except:
                     self.remove(clients)
-                    
+    
+    #   This function sends a message to a specific client
+    #   It takes in parameters of a message and a target client
     def send_msg(self, message, client):
         try:
             if (type(message) != bytes):
@@ -88,7 +99,8 @@ class PI_Srvr:
         except:
             self.remove(client)
                     
-
+    #   Removes a client from the client list
+    #   Takes in a parameter of a client
     def remove(self, old_client):
         print("Removing Client")
         old_client.close()
@@ -96,7 +108,9 @@ class PI_Srvr:
             self.clients_list.remove(old_client)
             if (self.encrypted == True):
                 self.AES_KEYS.remove(old_client)
-            
+
+    #   Opens up a thread that looks for new clients attempting to establish a connection
+    #   Starts a thread to manage new client connections
     def listening_thread(self):
         try:
             while True:
@@ -109,7 +123,9 @@ class PI_Srvr:
                     start_new_thread(self.client_thread,(client,addr))
         except:
             print("server_closed.")
-            
+  
+    #   Manages the client connection before allowing them to communicate (ENCRYPTION ONLY)
+    #   Takes in parameters of a client and an address
     def init_client_thread(self, client, addr):
         if (self.encrypted == True):
             connected = False
@@ -144,7 +160,8 @@ class PI_Srvr:
                     thread_open = False
         else:
             start_new_thread(self.client_thread,(client,addr))
-        
+    
+    #   Closes the server.
     def close_server(self):
         self.server.close()
 
