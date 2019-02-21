@@ -2,6 +2,7 @@ from Crypto import Random
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 
+#This class implements RSA Encryption
 class PI_RSA:
     def __init__(self):
         num_bits = 1024
@@ -11,20 +12,25 @@ class PI_RSA:
             self.key = RSA.generate(num_bits, self.rng)
         self.cipher = PKCS1_OAEP.new(self.key)
         
+    #encrypts a given message
     def encrypt(self, msg):
         if (type(msg) != bytes):
             msg = msg.encode('utf-8')
         return self.cipher.encrypt(msg)
     
+    #decrypts a given message
     def decrypt(self, msg):
         if (type(msg) != bytes):
             msg = msg.encode('utf-8')
         msg = self.cipher.decrypt(msg)
         return msg
     
+    #gets the public key
     def get_public(self):
         return str(self.key.n) +',' + str(self.key.e)
 
+#This class implements rsa encryption for a sender (who is given a key)
+#This class is only used for sending
 class PI_RSA_SN:
     def __init__(self, public_str): # public_str is in format n,e
         if (type(public_str) != str):
@@ -40,6 +46,7 @@ class PI_RSA_SN:
         except:
             self.initialized = False
     
+    #encrypts a given message (cannot decrypt)
     def encrypt(self, msg):
         if (type(msg) != bytes):
             msg = msg.encode('utf-8')
