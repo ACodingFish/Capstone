@@ -126,11 +126,11 @@ class PI_ServoController:
         #add servos [[sv1_range, sv1_home, sv1_max_deg, sv1_min_deg], [sv2...],...]
         sv_info = [[180,90,180,1],[180,45,135,1],[180,90,180,1],[180,90,180,1],[180,90,180,1],[120,1,40,1]]
         # servo 1 - right to left
-        # servo 2 - up to down
-        # servo 3 - down to up
-        # servo ##MISSING## X - ????
-        # servo 4 - right to left
-        # servo 5 - 44 (closed) 10 (open)
+        # servo 2 - top to bottom
+        # servo 3 - top to bottom
+        # servo 4 - top to bottom
+        # servo 5 - right to left
+        # servo 6 - 40 (closed) 1 (open)
         step_len = 1
         mov_duration = 3.0
         for sv in sv_info:
