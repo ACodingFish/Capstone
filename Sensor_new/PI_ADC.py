@@ -1,5 +1,6 @@
 import time
 import os
+import sys
 import RPi.GPIO as GPIO
 
 if sys.version_info[0] == 3:
@@ -11,7 +12,7 @@ class PI_ADC:
     def __init__(self, num_avgs):
         self.num_avg = 0            #init to 0
         if (num_avgs < 1):
-            num_avgs = 1):
+            num_avgs = 1
         self.max_num_avg = num_avgs #number of times to average
         self.avg_arr = []
         self.avg = 0
@@ -88,8 +89,8 @@ class PI_ADC_MONITOR:
                     #put in new elem
                     self.adc[i].avg_arr.pop(0) # shifts all elements left
                 self.adc[i].avg_arr.append(value) # appends new element
-                self.adc[i].avg = sum(self.adc[i].avg_arr)/self.length
+                self.adc[i].avg = sum(self.adc[i].avg_arr)/len(self.adc[i].avg_arr)
     
     def get_adc_avg(self, index):
-        return self.adc[i].avg #should default to 0
+        return self.adc[index].avg #should default to 0
         
