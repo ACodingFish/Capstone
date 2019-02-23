@@ -9,7 +9,7 @@ if sys.version_info[0] == 3:
 else:
     from thread import *      #Server program
     
-class sonar
+class PI_Sonar
     def _init_(self, trig, echo, max_length)
         self.trig = trig
         self.echo = echo
@@ -18,20 +18,22 @@ class sonar
         GPIO.output(self.trig,False)
         self.max_length = max_length
         avg_arr = []
+        self.avg = 0
     
     
-class run_sonar
+class PI_Sonar_Monitor
     def _init_(self)
         self.sensor_list = []
         # [[trigger pin, echo pin, num_avgs],....]
-        sonar_info[[23,24,3],[5,6,3]]
+        sonar_info=[[23,24,3],[5,6,3]]
+        self.num_sensors = len(sonar_info)
         for sensor in sonar_info:
             self.add_sensor(sensor[0], sensor[1], sensor[2]) 
         start_new_thread(self.run_sonar_sensors_thread,())
         
         
     def add_sensor(self, trig, echo)
-        new_sensor = sonar(trig, echo)
+        new_sensor = PI_Sonar(trig, echo)
         self.sensor_list.append(new_sensor)
     
     def get_elem(self, index):
@@ -66,6 +68,9 @@ class run_sonar
                     #put in new elem
                     self.sensor_list[i].avg_arr.pop(0) # shifts all elements left
                     self.sensor_list[i].avg_arr.append(new_element) # appends new element
-                self.avg = sum(self.sensor_list[i].avg_arr)/len(self.sensor_list[index].avg_arr)
+                self.sensor_list[i].avg = sum(self.sensor_list[i].avg_arr)/len(self.sensor_list[index].avg_arr)
+    
+    def get_avg(self, index):
+        return self.sensor_list[index].avg
         
     
