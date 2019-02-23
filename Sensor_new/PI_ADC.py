@@ -9,16 +9,17 @@ else:
     from thread import *
 
 class PI_ADC:
-    def __init__(self, num_avgs):
+    def __init__(self, num_avgs, limit):
         self.num_avg = 0            #init to 0
         if (num_avgs < 1):
             num_avgs = 1
         self.max_num_avg = num_avgs #number of times to average
         self.avg_arr = []
         self.avg = 0
+        self.limit = limit
     
 class PI_ADC_MONITOR:
-    def __init__(self, num_channels=8, num_avgs=3):
+    def __init__(self, num_channels=8, num_avgs=3, limit=750):
         self.num_channels = num_channels
         self.adc = [] #insert class here (Somehow pass parameters? or default them?)
         #initialize the adc
@@ -37,7 +38,7 @@ class PI_ADC_MONITOR:
         GPIO.setup(self.SPI_CS, GPIO.OUT)
         # initialize number of channels
         for i in range(self.num_channels):
-            self.adc.append(PI_ADC(num_avgs)) # average 3 times
+            self.adc.append(PI_ADC(num_avgs, limit)) # average 3 times
             
         #start thread
         start_new_thread(self.monitor_thread,())
@@ -93,4 +94,7 @@ class PI_ADC_MONITOR:
     
     def get_adc_avg(self, index):
         return self.adc[index].avg #should default to 0
+    
+    def channel_triggered(self,index):
+        return (self.adc[index].avg > self.adc[index].limit)
         
