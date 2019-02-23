@@ -51,17 +51,18 @@ GPIO.setup(SPIMOSI, GPIO.OUT)
 GPIO.setup(SPIMISO, GPIO.IN)
 GPIO.setup(SPICLK, GPIO.OUT)
 GPIO.setup(SPICS, GPIO.OUT)
+num_channels = 8
 
 while True:
         # we'll assume that the fsr hasn't been excited
-        for i in range(num_channels)
-        ################### Start sensor 1 code #########################
-        current_read1 = readadc(i, SPICLK, SPIMOSI, SPIMISO, SPICS)    # read the analog pin
+        for i in range(num_channels):
+            ################### Start sensor 1 code #########################
+            current_read1 = readadc(i, SPICLK, SPIMOSI, SPIMISO, SPICS)    # read the analog pin
 
-        if DEBUG:
+            if DEBUG:
                 print ("Sensor",i)
                 print ('Current Read:', current_read1)
        
-        # hang out and do nothing for a half second
-        time.sleep(0.5)
-        os.system('clear')
+            # hang out and do nothing for a half second
+            time.sleep(0.5)
+            os.system('clear')
