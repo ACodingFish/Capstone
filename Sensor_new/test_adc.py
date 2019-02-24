@@ -6,7 +6,6 @@ adc = PI_ADC_MONITOR()
 
 while True:
     for i in range(adc.num_channels):
-        max_val = 1
         print("ADC:",i)
         print("Value:",round(adc.get_adc_avg(i),2))
         if (adc.channel_triggered(i)):
