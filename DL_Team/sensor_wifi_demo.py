@@ -35,7 +35,7 @@ try:
             if (adc.channel_triggered(i)):
                 is_triggered=True
                 #print("Stop Squeezin")
-            time.sleep(0.3)
+            #time.sleep(0.3)
         if (is_triggered==False):
             if (prev_triggered==True): # to only send msg once
                 cli.Send_Msg("obcl") #send obstacle cleared message

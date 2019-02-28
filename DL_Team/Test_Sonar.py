@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import time 
 import math
 from PI_Sonar import *
