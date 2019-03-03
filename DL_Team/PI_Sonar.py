@@ -10,13 +10,14 @@ else:
     from thread import *      #Server program
     
 class PI_Sonar:
-    def __init__(self, trig, echo, max_length):
+    def __init__(self, trig, echo, num_avgs, limit):
         self.trig = trig
         self.echo = echo
         GPIO.setup(self.trig,GPIO.OUT)
         GPIO.setup(self.echo,GPIO.IN)
         GPIO.output(self.trig,False)
-        self.max_length = max_length
+        self.limit = limit
+        self.max_length = num_avgs
         self.avg_arr = []
         self.avg = 0
         self.pulse_start = 0
@@ -29,16 +30,16 @@ class PI_Sonar:
 class PI_Sonar_Monitor:
     def __init__(self):
         self.sensor_list = []
-        # [[trigger pin, echo pin, num_avgs],....]
-        sonar_info=[[23,24,3],[5,6,3]]
+        # [[trigger pin, echo pin, num_avgs, limit],....]
+        sonar_info=[[23,24,3,10],[5,6,3,10]]
         self.num_sensors = len(sonar_info)
         for sensor in sonar_info:
             self.add_sensor(sensor[0], sensor[1], sensor[2]) 
         start_new_thread(self.run_sonar_sensors_thread,())
         
         
-    def add_sensor(self, trig, echo, num_avgs):
-        new_sensor = PI_Sonar(trig, echo, num_avgs)
+    def add_sensor(self, trig, echo, num_avgs, limit):
+        new_sensor = PI_Sonar(trig, echo, num_avgs, limit)
         self.sensor_list.append(new_sensor)
     
 #    def get_elem(self, index):
@@ -111,11 +112,20 @@ class PI_Sonar_Monitor:
                 else: # Default state
                     print("RANGE EXCEPTION ON SENSOR:", i, self.sensor_list[i].state)
                     self.sensor_list[i].state = "Start"
-                
+   
                 if (self.sensor_list[i].state != prev_state):
                     self.sensor_list[i].timeout = time.time()
                     
-
+    def channel_triggered(self, index):
+        if (index < self.num_sensors):
+            if (self.sensor_list[index].avg < self.sensor_list[index].limit):
+                return True
+            else:
+                return False
+        else:
+            return False
+                
+                    
     def get_avg(self, index):
         return self.sensor_list[index].avg
         
