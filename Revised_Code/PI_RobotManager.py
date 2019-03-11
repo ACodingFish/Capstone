@@ -11,7 +11,7 @@ else:
     from thread import *
     
 class PI_RobotManager:
-    def __init__(self, local = False, ip_addr="127.0.0.1", port="10001")
+    def __init__(self, local = False, ip_addr="127.0.0.1", port="10001"):
         self.local = local
         channels = 16
         self.robot = PI_ServoController(channels) # Start servo controller with 16 channels
@@ -27,18 +27,20 @@ class PI_RobotManager:
 
     #get msg, parse msg
     def command_thread(self):
-        msg = cli.Recv_Msg()
-        if (len(msg) >0):
-            #relay msg to robot
-            self.parse(msg)
+        while True:
+            msg = self.cli.Recv_Msg()
+            if (len(msg) >0):
+                #relay msg to robot
+                self.parse(msg)
             
     def local_command_thread(self):
-        msg = sys.stdin.readline()
-        if (msg[:4].lower() == "exit"):
-            os._exit(0)
-        elif (len(msg) >0):
-            #relay to robot
-            self.parse(msg)
+        while True:
+            msg = sys.stdin.readline()
+            if (msg[:4].lower() == "exit"):
+                os._exit(0)
+            elif (len(msg) >0):
+                #relay to robot
+                self.parse(msg)
             
     def grab(self):
         while (self.left_psr <=0 and self.right_psr <= 0):
@@ -47,9 +49,9 @@ class PI_RobotManager:
         claw_index = len(self.robot.servo_list)-1 #claw is the last servo
         claw_closed = self.robot.servo_list[claw_index].max_pos
         self.robot.set_servo_position(claw_index, claw_closed)
-        time.sleep(.001) #wait for command
+        #time.sleep(.001) #wait for command
         #operation will terminate if either two sensors are triggered or the arm stops moving
-        while (self.left_psr <=0 or self.right_psr <= 0) and (self.robot.servo_list[claw_index].is_moving == True):
+        while (self.left_psr <=0 or self.right_psr <= 0) and (self.robot.servo_list[claw_index].current_angle != claw_closed):# and (self.robot.servo_list[claw_index].is_moving == True):
             pass
         self.robot.servo_list[claw_index].set_hard_stop()
         
@@ -66,8 +68,10 @@ class PI_RobotManager:
                     print("Command:",command[index:].replace('\n',''))
                     servo_index = { \
                     \
-                    "a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, \ #Servo index
-                    "home":-2, "obst":-3, "obcl":-4, "sd":-5, "sdeg":-6, "print":-7, "pos":-8, "grab":-9, "lpsr":=-10, "rpsr":=-11 \ #Commands (negative to allow for expandability of servos)
+                    #Servo index
+                    "a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, \
+                     #Commands (negative to allow for expandability of servos)
+                    "home":-2, "obst":-3, "obcl":-4, "sd":-5, "sdeg":-6, "print":-7, "pos":-8, "grab":-9, "lpsr":-10, "rpsr":-11 \
                     \
                     }.get(command[index:].replace('\n','').lower(), -1)
                     # [num][a-f]    => send servo to this target position
@@ -104,9 +108,9 @@ class PI_RobotManager:
                     elif servo_index == -9:      
                         start_new_thread(self.grab,())
                     elif (servo_index == -10 and index >0):      
-                        self.left_psr = command[:index]
+                        self.left_psr = int(command[:index])
                     elif (servo_index == -11 and index >0):      
-                        self.right_psr = command[:index]
+                        self.right_psr = int(command[:index])
                     elif (servo_index >=0 and index >0):
                         self.robot.set_servo_position(servo_index, command[:index]) # servo_index, servo_position
                     break

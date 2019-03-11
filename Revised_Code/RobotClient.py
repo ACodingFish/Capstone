@@ -2,7 +2,8 @@
 #Server program
 import sys
 import os
-from PI_Cli import *
+#from PI_Cli import *
+from PI_RobotManager import *
 
 num_args = len(sys.argv)
 if (num_args >3):
@@ -19,10 +20,10 @@ if (num_args == 3):
     except:
         pass
 
-cli = PI_Cli(ip_addr, port, True)
+robot = PI_RobotManager(False, ip_addr, port)
 
 while True:
     key_msg = sys.stdin.readline()
     if (key_msg[:4].lower() == "exit"):
         os._exit(0)
-    cli.Send_Msg(key_msg)
+    robot.parse(key_msg)

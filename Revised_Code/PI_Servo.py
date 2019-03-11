@@ -42,6 +42,7 @@ class PI_Servo:
         self.default_duration = dur # Total movement duration in seconds
         
     def is_moving(self):
+        #does not work.
         if (self.current_angle != self.target_angle):
             return True
         else:
