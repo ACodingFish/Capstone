@@ -1,6 +1,7 @@
 # Uses product/libraries from:
 # https://www.adafruit.com/product/2327
 # https://learn.adafruit.com/adafruit-16-channel-pwm-servo-hat-for-raspberry-pi/
+#requires installation of adafruit servokit (adafruit-circuitpython-servokit)
 import sys
 import os
 import time
@@ -39,6 +40,13 @@ class PI_Servo:
         self.step_length = 1.0 #seconds
         self.step_deg = step # number of degrees per step
         self.default_duration = dur # Total movement duration in seconds
+        
+    def is_moving(self):
+        #does not work.
+        if (self.current_angle != self.target_angle):
+            return True
+        else:
+            return False
     
     # Sets the duration and angle of a servo
     # Takes inputs of angle and duration
@@ -192,34 +200,6 @@ class PI_ServoController:
         for servos in self.servo_list:
             #self.kit.servo[servos.index].angle = int(servos.home)
             servos.force_home()
-    
-    #   Parses commands and relays them to their given functions if they are valid. 
-    def parse(self, commands):
-        for command in commands.split(", "):
-            index = 0
-            for character in command:
-                if (character.isdigit()): 
-                    index += 1
-                else:#elif (index>0):           
-                    #print("\tIndex: ",int(command[:index]),"\tString: ",command[index:])
-                    print("Command:",command[index:].replace('\n',''))
-                    servo_index = {"a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, "home":-2, "obst":-3, "obcl":-4, "sd":-5, "sdeg":-6, "print":-7}.get(command[index:].replace('\n','').lower(), -1)
-                    if servo_index == -2:
-                        self.go_home()
-                    elif servo_index == -3:
-                        self.servos_obstructed = True
-                    elif servo_index == -4:
-                        self.servos_obstructed = False
-                    elif (servo_index == -5) and (index > 0):
-                        self.set_movement_duration(command[:index])
-                    elif (servo_index == -6) and (index > 0):
-                        self.set_movement_step_deg(command[:index])
-                    elif servo_index == -7:
-                        for servos in self.servo_list:
-                            print("[",servos.index, "]: ", servos.current_angle, " TARGET:", servos.target_angle)
-                    elif (servo_index >=0 and index >0):
-                        self.set_servo_position(servo_index, command[:index]) # servo_index, servo_position
-                    break
     
     # Sets a specified servo to a given position
     # Takes in a servo's index and it's desired position

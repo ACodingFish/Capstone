@@ -57,6 +57,8 @@ class PI_AES:
         msg = self.pad(msg)
         iv = self.rng(AES.block_size)
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        if (type(msg) != bytes):
+            msg = msg.encode('utf-8')
         return base64.b64encode(iv + cipher.encrypt(msg))
     
     #   Decrypts a given encrypted message
@@ -68,7 +70,9 @@ class PI_AES:
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         msg = cipher.decrypt(msg[AES.block_size:])
         msg = self.unpad(msg)
-        return msg.decode('utf-8')
+        if (type(msg) == bytes):
+            msg = msg.decode('utf-8')
+        return msg
     
     #   Pads a message to fit the block size
     def pad(self, msg):

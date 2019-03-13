@@ -3,16 +3,15 @@
 #www.geeksforgeeks.org/simple-chat-room-using-python/amp/
 
 #requires installation of pycrypto (or pycryptodome)
-#requires installation of adafruit servokit (adafruit-circuitpython-servokit)
 import socket
 import select
 import sys
 import os
 import time
 import traceback
+from collections import deque
 from PI_RSA import *
 from PI_AES import *
-from PI_Servo import *
 
 if sys.version_info[0] == 3:
     from _thread import *
@@ -24,7 +23,6 @@ class PI_Cli:
     #   Initializes the client on localhost
     #   Requires an input of an ip address
     #   Requires an input of port number
-    #   Has an optional robot identification flag that defaults to false
     #   Has an optional encryption flag that defaults to true.
     def __init__(self, ip_addr, port, is_robot=False, is_encrypted=True):
         self.encrypt = is_encrypted
@@ -43,11 +41,7 @@ class PI_Cli:
             print("Failed to connect")
             os._exit(0)
             
-        self.in_msg = ""
-        
-        self.is_robot = is_robot
-        if (self.is_robot == True):
-            self.servo_controller = PI_ServoController(16) # Start servo controller with 16 channels
+        self.msg_buf = deque()
         
         if (self.encrypt == True):
             start_new_thread(self.Init_Thread,())
@@ -64,16 +58,16 @@ class PI_Cli:
                 read_sockets, write_sockets, error_sockets = select.select(sockets_list,sockets_list,[])
                 for socks in read_sockets:
                     if socks == self.server:
-                        self.in_msg = socks.recv(self.max_msg_size)
+                        msg = socks.recv(self.max_msg_size)
                         if (self.encrypt == True):
-                            self.in_msg = self.AES.decrypt(self.in_msg)
-                            if type(self.in_msg) != str:
-                                self.in_msg = self.in_msg.decode('utf-8')
+                            msg = self.AES.decrypt(msg)
+                            if type(msg) != str:
+                                msg = msg.decode('utf-8')
                         else:    
-                            self.in_msg = self.in_msg.decode('utf-8')
-                        if (self.is_robot == True):
-                            self.servo_controller.parse(self.in_msg)
-                        print(self.in_msg)
+                            msg = msg.decode('utf-8')
+                        #store in queue
+                        self.msg_buf.append(msg)
+                        print(msg)
         except Exception as e:
             #print(e)
             print("Lost connection to Server.")
@@ -119,4 +113,10 @@ class PI_Cli:
                 if self.encrypted == True:
                     message = self.AES.encrypt(message)
                 self.server.send(message)
+    
+    def Recv_Msg(self):
+        if (len(self.msg_buf) > 0):
+            return self.msg_buf.popleft()
+        else:
+            return ""
                     

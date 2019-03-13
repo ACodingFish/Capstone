@@ -25,4 +25,11 @@ while True:
     key_msg = sys.stdin.readline()
     if (key_msg[:4].lower() == "exit"):
         os._exit(0)
-    cli.Send_Msg(key_msg)
+    elif (key_msg[:4].lower() == "recv"):
+        msg = cli.Recv_Msg()
+        if (len(msg) > 0):
+            print(msg)
+        else:
+            print("NO")
+    else:
+        cli.Send_Msg(key_msg)

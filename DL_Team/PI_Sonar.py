@@ -34,7 +34,7 @@ class PI_Sonar_Monitor:
         sonar_info=[[23,24,3,10],[5,6,3,10]]
         self.num_sensors = len(sonar_info)
         for sensor in sonar_info:
-            self.add_sensor(sensor[0], sensor[1], sensor[2]) 
+            self.add_sensor(sensor[0], sensor[1], sensor[2], sensor[3]) 
         start_new_thread(self.run_sonar_sensors_thread,())
         
         
