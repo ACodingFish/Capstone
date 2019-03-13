@@ -3,6 +3,7 @@ import os
 import time
 from PI_Cli import *
 from PI_Servo import *
+from PI_Conf import *
 
 
 if sys.version_info[0] == 3:
@@ -11,16 +12,31 @@ else:
     from thread import *
     
 class PI_RobotManager:
-    def __init__(self, local = False, ip_addr="127.0.0.1", port="10001"):
+    def __init__(self):
+        conf = PI_Conf("conf/cli.conf")
+        local = (conf.data[Params.LOCAL] == "1")
+        ip_addr = conf.data[Params.IP_ADDR]
+        port = conf.data[Params.PORT]
+        encryption = (conf.data[Params.ENCRYPTION] == "1")
+        cli_id = conf.data[Params.ID]
+        
+        if (type(ip_addr) != str):
+            ip_addr = str(ip_addr)
+        if (type(port) != int):
+            port = int(port)
+        if (type(cli_id) != str):
+            cli_id = str(cli_id)
+            
         self.local = local
         channels = 16
         self.robot = PI_ServoController(channels) # Start servo controller with 16 channels
         #Start remote thread
         if (self.local == False):
-            self.cli = PI_Cli(ip_addr, port)
+            self.cli = PI_Cli(ip_addr, port, encryption)
             start_new_thread(self.command_thread,())
         #start local thread
         start_new_thread(self.local_command_thread,())
+        print("Client -- " + cli_id + " -- online.")
         self.left_psr = 0
         self.right_psr = 0
             

@@ -3,23 +3,16 @@
 import sys
 import os
 from PI_Cli import *
+from PI_Conf import *
 
-num_args = len(sys.argv)
-if (num_args >3):
-    print ("Too many command line args.")
-    exit();
+conf = PI_Conf("conf/cli.conf")
+ip_addr = conf.data[Params.IP_ADDR]
+port = int(conf.data[Params.PORT])
+encryption = (conf.data[Params.ENCRYPTION] == "1")
+cli_id = conf.data[Params.ID]
 
-port = 10001
-ip_addr = "127.0.0.1"
-
-if (num_args == 3):
-    try:
-        ip_addr = sys.argv[1]
-        port = int(sys.argv[2])
-    except:
-        pass
-
-cli = PI_Cli(ip_addr, port)
+cli = PI_Cli(ip_addr, port, encryption)
+print("Client -- " + cli_id + " -- online.")
 
 while True:
     key_msg = sys.stdin.readline()

@@ -3,21 +3,24 @@
 import sys
 import os
 from PI_Srvr import *
+from PI_Conf import *
 
-num_args = len(sys.argv)
-if (num_args >2):
-    print ("Too many command line args.")
-    exit();
+conf = PI_Conf("conf/srvr.conf")
+local = (conf.data[Params.LOCAL] == "1")
+ip_addr = conf.data[Params.IP_ADDR]
+port = conf.data[Params.PORT]
+encryption = (conf.data[Params.ENCRYPTION] == "1")
+srvr_id = conf.data[Params.ID]
 
-port = 10001
 
-if (num_args == 2):
-    try:
-        port = int(sys.argv[1])
-    except:
-        pass
-   
+if (type(ip_addr) != str):
+    ip_addr = str(ip_addr)
+if (type(port) != int):
+    port = int(port)
+if (type(srvr_id) != str):
+    srvr_id = str(srvr_id)
 srvr = PI_Srvr(port)
+print("Server -- " + srvr_id + " -- online.")
 
 while True:
     key_msg = sys.stdin.readline()
