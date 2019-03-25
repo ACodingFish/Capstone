@@ -4,6 +4,11 @@ import time
 from PI_Cli import *
 from PI_Servo import *
 from PI_Conf import *
+#from PI_ADC import *
+from PI_Sonar import *
+
+
+
 
 
 if sys.version_info[0] == 3:
@@ -27,6 +32,11 @@ class PI_RobotManager:
         if (type(cli_id) != str):
             cli_id = str(cli_id)
             
+        self.sonar = PI_Sonar_Monitor()
+        start_new_thread(self.sensor_thread,())
+        
+        #adc = PI_ADC_MONITOR()
+        
         self.local = local
         channels = 16
         self.robot = PI_ServoController(channels) # Start servo controller with 16 channels
@@ -39,6 +49,7 @@ class PI_RobotManager:
         print("Client -- " + cli_id + " -- online.")
         self.left_psr = 0
         self.right_psr = 0
+
             
 
     #get msg, parse msg
@@ -130,3 +141,15 @@ class PI_RobotManager:
                     elif (servo_index >=0 and index >0):
                         self.robot.set_servo_position(servo_index, command[:index]) # servo_index, servo_position
                     break
+                
+    def sensor_thread(self):
+        time.sleep(2)
+        while True:
+            sonar_bool = False
+            for i in range(self.sonar.num_sensors):
+                if (self.sonar.channel_triggered(i)):
+                    sonar_bool = True
+            if (sonar_bool == True):
+                self.parse("obst")
+            else:
+                self.parse("obcl")
