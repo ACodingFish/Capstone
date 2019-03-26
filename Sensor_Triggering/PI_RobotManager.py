@@ -144,12 +144,15 @@ class PI_RobotManager:
                 
     def sensor_thread(self):
         time.sleep(2)
+        prev_sonar_bool = False
         while True:
             sonar_bool = False
             for i in range(self.sonar.num_sensors):
                 if (self.sonar.channel_triggered(i)):
                     sonar_bool = True
-            if (sonar_bool == True):
+            if (sonar_bool == True)and(prev_sonar_bool == False):
                 self.parse("obst")
-            else:
+                prev_sonar_bool = True
+            elif (sonar_bool == False)and(prev_sonar_bool == True):
                 self.parse("obcl")
+                prev_sonar_bool = False
