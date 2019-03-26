@@ -26,3 +26,10 @@ class PI_Client_Monitor:
             if client.name == name:
                 cli_arr.append(client.idnum)
         return cli_arr
+        
+    def compare_client(self, parameter)
+        cli_arr = []
+        for client in self.client_list;
+            if parameter in client.name
+                cli_arr.append(client.idnum)
+        return cli_arr
