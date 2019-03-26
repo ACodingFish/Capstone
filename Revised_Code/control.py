@@ -5,7 +5,7 @@ import os
 #from PI_Cli import *
 from PI_RobotManager import *
 
-robot = PI_RobotManager(True, ip_addr, port)
+robot = PI_RobotManager()
 
 while True:
     key_msg = sys.stdin.readline()

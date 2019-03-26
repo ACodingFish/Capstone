@@ -1,15 +1,14 @@
 #!/usr/bin/python3
-import os
+#Server program
 import sys
-from PI_Servo import *
+import os
+#from PI_Cli import *
+from PI_RobotManager import *
 
-servo_controller = PI_ServoController(16)
+robot = PI_RobotManager(True, ip_addr, port)
+
 while True:
     key_msg = sys.stdin.readline()
     if (key_msg[:4].lower() == "exit"):
         os._exit(0)
-    elif(key_msg[:5].lower() == "fhome"):
-        servo_controller.force_home()
-            
-    servo_controller.parse(key_msg)
-    
+    robot.parse(key_msg)
