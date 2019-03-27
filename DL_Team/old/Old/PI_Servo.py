@@ -132,7 +132,7 @@ class PI_ServoController:
         self.kit = ServoKit(channels=self.max_channels)
         self.servo_list = []
         #add servos [[sv1_range, sv1_home, sv1_max_deg, sv1_min_deg], [sv2...],...]
-        sv_info = [[180,90,180,1],[180,45,135,1],[180,90,180,1],[180,90,180,1],[180,90,180,1],[120,1,37,1]]
+        sv_info = [[180,90,180,1],[180,45,135,1],[180,90,180,1],[180,90,180,1],[180,90,180,1],[120,1,40,1]]
         # servo 1 - right to left
         # servo 2 - top to bottom
         # servo 3 - top to bottom

@@ -31,7 +31,7 @@ class PI_Sonar_Monitor:
     def __init__(self):
         self.sensor_list = []
         # [[trigger pin, echo pin, num_avgs, limit],....]
-        sonar_info=[[23,24,3,10]]#,[5,6,3,10]]
+        sonar_info=[[23,24,3,10],[5,6,3,10]]
         self.num_sensors = len(sonar_info)
         for sensor in sonar_info:
             self.add_sensor(sensor[0], sensor[1], sensor[2], sensor[3]) 
@@ -110,7 +110,7 @@ class PI_Sonar_Monitor:
                     self.sensor_list[i].avg = sum(self.sensor_list[i].avg_arr)/len(self.sensor_list[i].avg_arr)
                     self.sensor_list[i].state = "Start"
                 else: # Default state
-                    #print("RANGE EXCEPTION ON SENSOR:", i, self.sensor_list[i].state)
+                    print("RANGE EXCEPTION ON SENSOR:", i, self.sensor_list[i].state)
                     self.sensor_list[i].state = "Start"
    
                 if (self.sensor_list[i].state != prev_state):
@@ -119,8 +119,6 @@ class PI_Sonar_Monitor:
     def channel_triggered(self, index):
         if (index < self.num_sensors):
             if (self.sensor_list[index].avg < self.sensor_list[index].limit):
-                #print("The average is: ", self.sensor_list[index].avg)
-                #print("The limit is: ", self.sensor_list[index].limit)
                 return True
             else:
                 return False

@@ -13,13 +13,3 @@ while True:
             
         
         time.sleep(0.3)
-        
-while True:
-    sonar_bool = False
-    for i in range(sonar.num_channels):
-        if (sonar.channel_triggered(i)):
-            sonar_bool = True
-    if (sonar_bool == True):
-        self.parse("obst")
-    else:
-        self.parse("obcl")
