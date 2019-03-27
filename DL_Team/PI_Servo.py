@@ -241,7 +241,9 @@ class PI_ServoController:
                                 print("Servo[", servos.index,"] at: ", servos.current_angle)
                 else:
                             # take servo obstructed action
-                    for servos in self.servo_list:
-                        servos.set_obstruction()
-                        self.kit.servo[servos.index].angle = int(servos.prev_angle)
+                    for i in range(len(self.servo_list)):
+                        if (i != len(self.servo_list)-1): #if its the claw
+                            servos = self.servo_list[i]
+                            servos.set_obstruction()
+                            self.kit.servo[servos.index].angle = int(servos.prev_angle)
                 #pre_loop_time = time.time()
