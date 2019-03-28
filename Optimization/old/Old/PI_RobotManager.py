@@ -3,12 +3,6 @@ import os
 import time
 from PI_Cli import *
 from PI_Servo import *
-from PI_Conf import *
-from PI_ADC import *
-from PI_Sonar import *
-
-
-
 
 
 if sys.version_info[0] == 3:
@@ -17,42 +11,18 @@ else:
     from thread import *
     
 class PI_RobotManager:
-    def __init__(self):
-        self.ROBOT_INTIALIZED = False
-        conf = PI_Conf("conf/rob.conf")
-        local = (conf.data[Params.LOCAL] == "1")
-        ip_addr = conf.data[Params.IP_ADDR]
-        port = conf.data[Params.PORT]
-        encryption = (conf.data[Params.ENCRYPTION] == "1")
-        cli_id = conf.data[Params.ID]
-        
-        if (type(ip_addr) != str):
-            ip_addr = str(ip_addr)
-        if (type(port) != int):
-            port = int(port)
-        if (type(cli_id) != str):
-            cli_id = str(cli_id)
-            
-        self.sonar = PI_Sonar_Monitor()
-        self.adc = PI_ADC_MONITOR()
-        start_new_thread(self.sensor_thread,())
-        
-        #adc = PI_ADC_MONITOR()
-        
+    def __init__(self, local = False, ip_addr="127.0.0.1", port="10001"):
         self.local = local
         channels = 16
         self.robot = PI_ServoController(channels) # Start servo controller with 16 channels
         #Start remote thread
         if (self.local == False):
-            self.cli = PI_Cli(ip_addr, port, encryption)
+            self.cli = PI_Cli(ip_addr, port)
             start_new_thread(self.command_thread,())
         #start local thread
         start_new_thread(self.local_command_thread,())
-        print("Client -- " + cli_id + " -- online.")
         self.left_psr = 0
         self.right_psr = 0
-        self.ROBOT_INTIALIZED = True
-
             
 
     #get msg, parse msg
@@ -144,47 +114,3 @@ class PI_RobotManager:
                     elif (servo_index >=0 and index >0):
                         self.robot.set_servo_position(servo_index, command[:index]) # servo_index, servo_position
                     break
-        
-    def sensor_thread(self):
-        while True:
-            if (self.ROBOT_INTIALIZED == True):
-                prev_sonar_bool = False
-                num_adc = self.adc.num_channels
-                half_num_adc = num_adc/2
-                prev_adc_left_count = 0
-                prev_adc_right_count = 0
-                self.parse("0lpsr, 0rpsr")
-                while True:
-                    sonar_bool = False
-                    for i in range(self.sonar.num_sensors):
-                        if (self.sonar.channel_triggered(i)):
-                            sonar_bool = True
-                    if (sonar_bool == True)and(prev_sonar_bool == False):
-                        self.parse("obst")
-                        prev_sonar_bool = True
-                    elif (sonar_bool == False)and(prev_sonar_bool == True):
-                        self.parse("obcl")
-                        prev_sonar_bool = False
-                        
-                    adc_left_count = 0
-                    adc_right_count = 0
-                    for i in range(num_adc):
-                        if (self.adc.channel_triggered(i)):
-                            if (i < half_num_adc):
-                                #left
-                                adc_left_count+=1
-                            else:
-                                #right
-                                adc_right_count+=1
-
-                    if (adc_left_count != prev_adc_left_count):
-                        parse_str = str(adc_left_count) + "lpsr"
-                        self.parse(parse_str)
-                        prev_adc_left_count = adc_left_count
-                    elif (adc_right_count != prev_adc_right_count):
-                        parse_str = str(adc_right_count) + "rpsr"
-                        self.parse(parse_str)
-                        prev_adc_right_count = adc_right_count
-                
-            
-            
