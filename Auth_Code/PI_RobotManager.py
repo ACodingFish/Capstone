@@ -62,7 +62,7 @@ class PI_RobotManager:
             msg = self.cli.Recv_Msg()
             if (len(msg) >0):
                 if (cli.auth == True):
-                    msg = msg.split(':')[1]
+                    msg = msg.split(':')[1] #send only the message to be parsed
                 #relay msg to robot
                 self.parse(msg)
 
