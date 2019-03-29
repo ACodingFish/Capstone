@@ -81,7 +81,7 @@ class PI_Srvr:
                     self.remove(client)
                     thread_open = False
             except Exception as e:
-                print(e)
+                #print(e)
                 self.remove(client)
                 thread_open = False
                 continue
@@ -184,7 +184,7 @@ class PI_Srvr:
                         thread_open = False
                         self.remove(client)
                 except Exception as e:
-                    print(e)
+                    #print(e)
                     #traceback.print_exc()
                     self.remove(client)
                     thread_open = False
