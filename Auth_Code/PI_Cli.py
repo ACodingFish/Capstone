@@ -83,14 +83,6 @@ class PI_Cli:
     def Init_Thread(self):
         try:
         #time.sleep(.5)
-            if (self.auth == True):
-                authorized = False
-                while authorized == False:
-                    self.Send_Msg(self.name)
-                    msg = self.server.recv(self.max_msg_size)
-                    authorized = True
-                    print("Authentication Complete")
-
             if (self.encrypt == True):
                 connected = False
 
