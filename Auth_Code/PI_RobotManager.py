@@ -15,7 +15,7 @@ if sys.version_info[0] == 3:
     from _thread import *
 else:
     from thread import *
-    
+
 class PI_RobotManager:
     def __init__(self):
         self.ROBOT_INTIALIZED = False
@@ -25,26 +25,27 @@ class PI_RobotManager:
         port = conf.data[Params.PORT]
         encryption = (conf.data[Params.ENCRYPTION] == "1")
         cli_id = conf.data[Params.ID]
-        
+        auth = (conf.data[Params.AUTHENTICATION] == "1")
+
         if (type(ip_addr) != str):
             ip_addr = str(ip_addr)
         if (type(port) != int):
             port = int(port)
         if (type(cli_id) != str):
             cli_id = str(cli_id)
-            
+
         self.sonar = PI_Sonar_Monitor()
         self.adc = PI_ADC_MONITOR()
         start_new_thread(self.sensor_thread,())
-        
+
         #adc = PI_ADC_MONITOR()
-        
+
         self.local = local
         channels = 16
         self.robot = PI_ServoController(channels) # Start servo controller with 16 channels
         #Start remote thread
         if (self.local == False):
-            self.cli = PI_Cli(ip_addr, port, encryption)
+            self.cli = PI_Cli(ip_addr, port, encryption, auth, cli_id)
             start_new_thread(self.command_thread,())
         #start local thread
         start_new_thread(self.local_command_thread,())
@@ -53,7 +54,7 @@ class PI_RobotManager:
         self.right_psr = 0
         self.ROBOT_INTIALIZED = True
 
-            
+
 
     #get msg, parse msg
     def command_thread(self):
@@ -62,7 +63,7 @@ class PI_RobotManager:
             if (len(msg) >0):
                 #relay msg to robot
                 self.parse(msg)
-            
+
     def local_command_thread(self):
         while True:
             msg = sys.stdin.readline()
@@ -71,11 +72,11 @@ class PI_RobotManager:
             elif (len(msg) >0):
                 #relay to robot
                 self.parse(msg)
-            
+
     def grab(self):
         while (self.left_psr <=0 and self.right_psr <= 0):
             pass
-        
+
         claw_index = len(self.robot.servo_list)-1 #claw is the last servo
         claw_closed = self.robot.servo_list[claw_index].max_pos
         self.robot.set_servo_position(claw_index, claw_closed)
@@ -84,16 +85,16 @@ class PI_RobotManager:
         while (self.left_psr <=0 or self.right_psr <= 0) and (self.robot.servo_list[claw_index].current_angle != claw_closed):# and (self.robot.servo_list[claw_index].is_moving == True):
             pass
         self.robot.servo_list[claw_index].set_hard_stop()
-        
-        
-    #   Parses commands and relays them to their given functions if they are valid.     
+
+
+    #   Parses commands and relays them to their given functions if they are valid.
     def parse(self, commands):
         for command in commands.split(", "):
             index = 0
             for character in command:
-                if (character.isdigit()): 
+                if (character.isdigit()):
                     index += 1
-                else:#elif (index>0):           
+                else:#elif (index>0):
                     #print("\tIndex: ",int(command[:index]),"\tString: ",command[index:])
                     print("Command:",command[index:].replace('\n',''))
                     servo_index = { \
@@ -135,16 +136,16 @@ class PI_RobotManager:
                                 pos+=("S" + str(servos.index) + "$" + str(servos.current_angle) + "$" + str(servos.target_angle)) # Ex. S0$100$180, s1$50$20, ...
                                 pos+=(", ")
                             cli.Send_Msg(pos[:-1]) #remove last char and relay to server
-                    elif servo_index == -9:      
+                    elif servo_index == -9:
                         start_new_thread(self.grab,())
-                    elif (servo_index == -10 and index >0):      
+                    elif (servo_index == -10 and index >0):
                         self.left_psr = int(command[:index])
-                    elif (servo_index == -11 and index >0):      
+                    elif (servo_index == -11 and index >0):
                         self.right_psr = int(command[:index])
                     elif (servo_index >=0 and index >0):
                         self.robot.set_servo_position(servo_index, command[:index]) # servo_index, servo_position
                     break
-        
+
     def sensor_thread(self):
         while True:
             if (self.ROBOT_INTIALIZED == True):
@@ -165,7 +166,7 @@ class PI_RobotManager:
                     elif (sonar_bool == False)and(prev_sonar_bool == True):
                         self.parse("obcl")
                         prev_sonar_bool = False
-                        
+
                     adc_left_count = 0
                     adc_right_count = 0
                     for i in range(num_adc):
@@ -185,6 +186,3 @@ class PI_RobotManager:
                         parse_str = str(adc_right_count) + "rpsr"
                         self.parse(parse_str)
                         prev_adc_right_count = adc_right_count
-                
-            
-            
