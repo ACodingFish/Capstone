@@ -20,7 +20,7 @@ class PI_Srvr:
     #   Initializes the server on localhost
     #   Requires an input of port number
     #   Has an optional encryption flag that defaults to true.
-    def __init__(self, port_num, is_encrypted=True, use_auth=True, auth_name="None"):
+    def __init__(self, port_num, is_encrypted=True, use_auth=True, auth_name=""):
         self.encrypted = is_encrypted
         self.RSA = PI_RSA()
         self.AES_KEYS = PI_KEY_AES()

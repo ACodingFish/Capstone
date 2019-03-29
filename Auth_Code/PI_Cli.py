@@ -24,7 +24,7 @@ class PI_Cli:
     #   Requires an input of an ip address
     #   Requires an input of port number
     #   Has an optional encryption flag that defaults to true.
-    def __init__(self, ip_addr, port, is_encrypted=True, use_auth=True, auth_name="None"):
+    def __init__(self, ip_addr, port, is_encrypted=True, use_auth=True, auth_name=""):
         self.encrypt = is_encrypted
         self.encrypted = False
         self.RSA = PI_RSA()
@@ -121,6 +121,8 @@ class PI_Cli:
                 if (type(message) != bytes):
                     message = message.encode('utf-8')
                 if self.encrypted == True:
+                    if (self.auth == True):
+                        message = self.name + ":" + message
                     message = self.AES.encrypt(message)
                 self.server.send(message)
 
