@@ -8,18 +8,19 @@ import os
 import traceback
 from PI_RSA import *
 from PI_AES import *
+from PI_ClientManager import *
 
 if sys.version_info[0] == 3:
     from _thread import *
 else:
     from thread import *
-    
+
 #   This class is a socket server implementation designed to be used with encryption
 class PI_Srvr:
     #   Initializes the server on localhost
     #   Requires an input of port number
     #   Has an optional encryption flag that defaults to true.
-    def __init__(self, port_num, is_encrypted=True):
+    def __init__(self, port_num, is_encrypted=True, use_auth=True, auth_name="None"):
         self.encrypted = is_encrypted
         self.RSA = PI_RSA()
         self.AES_KEYS = PI_KEY_AES()
@@ -28,12 +29,20 @@ class PI_Srvr:
         self.port = port_num
         self.max_num_connections = 20
         self.clients_list = []
-        
+
+        #authentication (client names)
+        self.cli_manager = PI_ClientManager()
+        self.auth = use_auth
+        if (self.auth == True):
+            self.encrypt = True
+        self.name = auth_name
+
+
         self.max_msg_size = 2048
         #ip_addr = str(sys.argv[1])
         self.server.bind(('',self.port)) #was ip_addr #localhost
         self.server.listen(self.max_num_connections)
-        
+
         print("<Server Is Running>")# On: " + ip_addr)
         #start_new_thread(menu_thread,())
         start_new_thread(self.listening_thread,())
@@ -52,7 +61,7 @@ class PI_Srvr:
                 message = client.recv(self.max_msg_size)
                 if (self.encrypted == True):
                     message = aes.decrypt(message)
-                
+
                 if type(message) != str:
                     message = message.decode('utf-8')
                 if message:
@@ -83,7 +92,7 @@ class PI_Srvr:
                         self.send_msg(message, clients)
                 except:
                     self.remove(clients)
-    
+
     #   This function sends a message to a specific client
     #   It takes in parameters of a message and a target client
     def send_msg(self, message, client):
@@ -98,7 +107,7 @@ class PI_Srvr:
             client.send(message)
         except:
             self.remove(client)
-                    
+
     #   Removes a client from the client list
     #   Takes in a parameter of a client
     def remove(self, old_client):
@@ -108,6 +117,8 @@ class PI_Srvr:
             self.clients_list.remove(old_client)
             if (self.encrypted == True):
                 self.AES_KEYS.remove(old_client)
+            if (self.auth == True):
+                self.cli_manager.remove(old_client)
 
     #   Opens up a thread that looks for new clients attempting to establish a connection
     #   Starts a thread to manage new client connections
@@ -117,13 +128,13 @@ class PI_Srvr:
                 client, addr = self.server.accept()
                 self.clients_list.append(client)
                 print (addr[0] + " connected")
-                if (self.encrypted == True):
+                if (self.encrypted == True)or(self.auth == True):
                     start_new_thread(self.init_client_thread,(client,addr))
                 else:
                     start_new_thread(self.client_thread,(client,addr))
         except:
             print("server_closed.")
-  
+
     #   Manages the client connection before allowing them to communicate (ENCRYPTION ONLY)
     #   Takes in parameters of a client and an address
     def init_client_thread(self, client, addr):
@@ -133,7 +144,7 @@ class PI_Srvr:
             while (connected == False) and (thread_open == True):
                 try:
                     message = client.recv(self.max_msg_size) #get rsa key from client
-                
+
                     if message:
                         if (len(message) > 0):
                             #message = self.RSA.decrypt(message)
@@ -144,9 +155,16 @@ class PI_Srvr:
                             key_msg = cli_RSA.encrypt(aes_key)
                             self.send_msg(key_msg, client)
                             self.AES_KEYS.add(client, aes_key)
+                            if (self.auth == True):
+                                message = client.recv(self.max_msg_size)
+                                cli_name = cli_AES.decrypt(message)
+                                self.cli_manager.add(cli_name,client)
+                                self.send_msg(cli_AES.encrypt(self.name), client)
+                                print("Client",cli_name,"has connected.")
+
                             connected = True
                             #print(aes_key)
-                        
+
                     if connected == True:
                         print("Client Verification Successful.")
                         start_new_thread(self.client_thread,(client,addr))
@@ -160,8 +178,7 @@ class PI_Srvr:
                     thread_open = False
         else:
             start_new_thread(self.client_thread,(client,addr))
-    
+
     #   Closes the server.
     def close_server(self):
         self.server.close()
-
