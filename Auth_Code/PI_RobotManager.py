@@ -61,6 +61,8 @@ class PI_RobotManager:
         while True:
             msg = self.cli.Recv_Msg()
             if (len(msg) >0):
+                if (cli.auth == True):
+                    msg = msg.split(':')[1]
                 #relay msg to robot
                 self.parse(msg)
 
