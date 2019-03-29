@@ -118,12 +118,14 @@ class PI_Cli:
         read_sockets, write_sockets, error_sockets = select.select(sockets_list,sockets_list,[])
         for socks in write_sockets:
             if socks == self.server:
-                if (type(message) != bytes):
-                    message = message.encode('utf-8')
+
                 if self.encrypted == True:
                     if (self.auth == True):
                         message = self.name + ":" + message
+                        message = message.encode('utf-8')
                     message = self.AES.encrypt(message)
+                elif (type(message) != bytes):
+                    message = message.encode('utf-8')
                 self.server.send(message)
 
     def Recv_Msg(self):
