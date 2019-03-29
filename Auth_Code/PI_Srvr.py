@@ -120,14 +120,17 @@ class PI_Srvr:
     #   Removes a client from the client list
     #   Takes in a parameter of a client
     def remove(self, old_client):
-        print("Removing Client")
+
         old_client.close()
         if old_client in self.clients_list:
             self.clients_list.remove(old_client)
             if (self.encrypted == True):
                 self.AES_KEYS.remove(old_client)
             if (self.auth == True):
-                self.cli_manager.remove(old_client)
+                cli = self.cli_manager.remove(old_client)
+                print("Client", cli.name, "Disconnected")
+            else:
+                print("Client Removed")
                 #self.cli_manager.p_all()
 
     #   Opens up a thread that looks for new clients attempting to establish a connection

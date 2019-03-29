@@ -113,19 +113,24 @@ class PI_Cli:
 
     #   Sends a message to the server
     #   Requires an input of a message
-    def Send_Msg(self, message, target="ALL"):
+    def Send_Msg(self, message):
+        if (self.encrypted == True) and(self.auth == True):
+            target = "ALL"
+            split_msg = message.split(':')
+            if (len(split_msg) > 1):
+                target = split_msg[0]
+            message = target + ":" + self.name + ":" + split_msg[1]
+        self.Send_Msg_Server(message)
+
+    def Send_Msg_Server(self, message):
         sockets_list = [self.server]
         read_sockets, write_sockets, error_sockets = select.select(sockets_list,sockets_list,[])
         for socks in write_sockets:
             if socks == self.server:
-
-                if self.encrypted == True:
-                    if (self.auth == True):
-                        message = target + ":" + self.name + ":" + message
-                        message = message.encode('utf-8')
-                    message = self.AES.encrypt(message)
-                elif (type(message) != bytes):
+                if (type(message) != bytes):
                     message = message.encode('utf-8')
+                if self.encrypted == True:
+                    message = self.AES.encrypt(message)
                 self.server.send(message)
 
     def Recv_Msg(self):
