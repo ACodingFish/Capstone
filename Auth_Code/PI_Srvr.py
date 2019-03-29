@@ -68,13 +68,15 @@ class PI_Srvr:
                     if (len(message) > 0):
                         print(message)
                         if (self.auth == True):
-                            split_msg = message.split(':')
-                            if (split_msg[0]== "ALL"): #if the target is all
-                                self.relay_all(split_msg[1] + ":" + split_msg[2],client) #send client id and msg
+                            msg_data = message.split(':')
+                            if (msg_data[0]== "ALL"): #if the target is all
+                                self.relay_all(msg_data[1] + ":" + msg_data[2],client) #send client id and msg
                             else:
-                                target_clients = self.cli_manager.search(split_msg[0])
-                                for tgt_cli in target_clients:
-                                    self.send_msg(split_msg[1] + ":" + split_msg[2],tgt_cli) #send to each intended client
+                                client_names = msg_data[0].split(",")
+                                for client_name in specified_client_names:
+                                    target_clients = self.cli_manager.search(client_name)
+                                    for tg in target_clients: #for each client with that name
+                                        self.send_msg(msg_data[1] + ":" + msg_data[2],tg) #send to each intended client
                         else:
                             self.relay_all(message,client)
                 else:

@@ -27,6 +27,7 @@ class PI_RobotManager:
         cli_id = conf.data[Params.ID]
         auth = (conf.data[Params.AUTHENTICATION] == "1")
 
+
         if (type(ip_addr) != str):
             ip_addr = str(ip_addr)
         if (type(port) != int):
@@ -47,6 +48,8 @@ class PI_RobotManager:
         if (self.local == False):
             self.cli = PI_Cli(ip_addr, port, encryption, auth, cli_id)
             start_new_thread(self.command_thread,())
+            if (self.cli.auth == False):
+                self.associated_clients = [] # holds clients that have communicated with the robot.
         #start local thread
         start_new_thread(self.local_command_thread,())
         print("Client -- " + cli_id + " -- online.")
@@ -87,6 +90,16 @@ class PI_RobotManager:
         while (self.left_psr <=0 or self.right_psr <= 0) and (self.robot.servo_list[claw_index].current_angle != claw_closed):# and (self.robot.servo_list[claw_index].is_moving == True):
             pass
         self.robot.servo_list[claw_index].set_hard_stop()
+
+    def send_clients(self, message):
+        if (self.cli.auth == True):
+            if(len(self.associated_clients)>0):
+                send_str = ",".join([client for client in clients])) #relay message to all clients who have talked to us
+                send_str +=":" + message
+                    self.cli.Send_Msg(send_str)
+        else:
+            self.cli.Send_Msg(message)
+
 
 
     #   Parses commands and relays them to their given functions if they are valid.
