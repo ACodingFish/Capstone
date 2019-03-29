@@ -172,7 +172,7 @@ class PI_Srvr:
                                 cli_name = cli_AES.decrypt(message)
                                 self.cli_manager.add(cli_name,client)
                                 self.send_msg(self.name, client)
-                                print("Client",cli_name,"has connected.")
+                                print("Client",cli_name,"Has Been Verified.")
 
                             connected = True
                             #print(aes_key)
