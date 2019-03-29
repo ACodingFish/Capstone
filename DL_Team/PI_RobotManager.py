@@ -44,9 +44,7 @@ class PI_RobotManager:
         if (self.local == False):
             self.cli = PI_Cli(ip_addr, port, encryption, auth, cli_id)
             start_new_thread(self.command_thread,())
-            if (self.cli.auth == True):
-                self.cli.Send_Msg("online") #tell everyone robot is online
-                self.associated_clients = [] # holds clients that have communicated with the robot.
+            
         #start local thread
         start_new_thread(self.local_command_thread,())
         print("Client -- " + cli_id + " -- online.")
@@ -54,6 +52,8 @@ class PI_RobotManager:
         self.right_psr = 0
         self.streaming = False
         self.ROBOT_INTIALIZED = True
+        
+        
 
 
 
@@ -111,7 +111,7 @@ class PI_RobotManager:
         if (self.local == False):
             if (self.cli.auth == True):
                 if(len(self.associated_clients)>0):
-                    send_str = ",".join([client for client in clients])) #relay message to all clients who have talked to us
+                    send_str = ",".join([client for client in clients]) #relay message to all clients who have talked to us
                     send_str +=":" + message
                     self.cli.Send_Msg(send_str)
             else:
@@ -125,7 +125,7 @@ class PI_RobotManager:
             associated = False
             for cli in self.associated_clients:
                 if (cli == client):
-                    associated = True:
+                    associated = True
                     break
             self.associated_clients.append(client)
 

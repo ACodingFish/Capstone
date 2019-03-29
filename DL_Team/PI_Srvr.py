@@ -187,7 +187,7 @@ class PI_Srvr:
                         thread_open = False
                         self.remove(client)
                 except Exception as e:
-                    #print(e)
+                    print(e)
                     #traceback.print_exc()
                     self.remove(client)
                     thread_open = False
