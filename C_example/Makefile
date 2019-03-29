@@ -6,14 +6,14 @@
 ORG = ./build/*/*.so
 DEST = ./
 PROGNAME = ex
+SRC=benchmark.c
 all: build
 
-build:
+build: $(SRC)
 	python3 setup.py build
 #	mv $(MODFILE) $(MODFILE_W)
 #	mv $(SRCFILE) $(SRCFILE_W)
 	mv $(ORG) $(DEST)
-
 
 .PHONY: clean run
 clean:
