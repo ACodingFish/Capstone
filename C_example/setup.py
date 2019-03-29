@@ -1,4 +1,5 @@
 from distutils.core import setup, Extension
-MOD = "benchmark"
-setup(name = MOD, ext_modules = [Extension(MOD,sources=['benchmark.c'])],
-description = "My C Extension Module")
+mod_name = "benchmark"
+module1 = Extension(mod_name, sources=["benchmark.c"])
+setup(name = mod_name, version = '1.0', ext_modules = [module1],
+description = "This is for a benchmark")
