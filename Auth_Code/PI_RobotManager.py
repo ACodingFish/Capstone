@@ -107,22 +107,26 @@ class PI_RobotManager:
 
     #   Sends to all registered clients who have sent a msg to robot
     def send_associated_clients(self, message):
-        if (self.cli.auth == True):
-            if(len(self.associated_clients)>0):
-                send_str = ",".join([client for client in clients])) #relay message to all clients who have talked to us
-                send_str +=":" + message
-                self.cli.Send_Msg(send_str)
+        if (self.local == False):
+            if (self.cli.auth == True):
+                if(len(self.associated_clients)>0):
+                    send_str = ",".join([client for client in clients])) #relay message to all clients who have talked to us
+                    send_str +=":" + message
+                    self.cli.Send_Msg(send_str)
+            else:
+                self.cli.Send_Msg(message)
         else:
-            self.cli.Send_Msg(message)
+            print(message)
 
     #    Keeps track of associated clients who have sent us messages
     def add_associated_client(self, client):
-        associated = False
-        for cli in self.associated_clients:
-            if (cli == client):
-                associated = True:
-                break
-        self.associated_clients.append(client)
+        if (self.local == False):
+            associated = False
+            for cli in self.associated_clients:
+                if (cli == client):
+                    associated = True:
+                    break
+            self.associated_clients.append(client)
 
     #   Parses commands and relays them to their given functions if they are valid.
     def parse(self, commands):
