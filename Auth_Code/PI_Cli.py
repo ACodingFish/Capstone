@@ -114,13 +114,18 @@ class PI_Cli:
     #   Sends a message to the server
     #   Requires an input of a message
     def Send_Msg(self, message):
-        if (self.encrypted == True) and(self.auth == True):
-            target = "ALL"
-            split_msg = message.split(':')
-            if (len(split_msg) > 1):
-                target = split_msg[0]
-            message = target + ":" + self.name + ":" + split_msg[1]
-        self.Send_Msg_Server(message)
+        if (len(message)>0):
+            if (self.encrypted == True) and(self.auth == True):
+                target = "ALL"
+                split_index = 0
+                split_msg = message.split(':')
+                if (len(split_msg) > 1): #if target is specified
+                    target = split_msg[0]
+                    message = split_msg[1]
+                elif (len(split_msg) == 0): #if target is not specified
+                    message = split_msg[0]
+                message = target + ":" + self.name + message
+            self.Send_Msg_Server(message)
 
     def Send_Msg_Server(self, message):
         sockets_list = [self.server]
