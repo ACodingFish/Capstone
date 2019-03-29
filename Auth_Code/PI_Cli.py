@@ -124,7 +124,7 @@ class PI_Cli:
                     message = split_msg[1]
                 elif (len(split_msg) == 0): #if target is not specified
                     message = split_msg[0]
-                message = target + ":" + self.name + message
+                message = target + ":" + self.name + ":"+ message
             self.Send_Msg_Server(message)
 
     def Send_Msg_Server(self, message):
