@@ -148,6 +148,7 @@ class PI_RobotManager:
                     associated = True
                     break
             if (associated == False):
+                print("Adding Client:",client)
                 self.associated_clients.append(client)
 
     #   Parses commands and relays them to their given functions if they are valid.
