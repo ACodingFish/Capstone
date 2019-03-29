@@ -11,7 +11,6 @@ ip_addr = conf.data[Params.IP_ADDR]
 port = conf.data[Params.PORT]
 encryption = (conf.data[Params.ENCRYPTION] == "1")
 srvr_id = conf.data[Params.ID]
-auth = (conf.data[Params.AUTHENTICATION] == "1")
 
 
 if (type(ip_addr) != str):
@@ -20,7 +19,7 @@ if (type(port) != int):
     port = int(port)
 if (type(srvr_id) != str):
     srvr_id = str(srvr_id)
-srvr = PI_Srvr(port, encryption, auth, srvr_id)
+srvr = PI_Srvr(port)
 print("Server -- " + srvr_id + " -- online.")
 
 while True:

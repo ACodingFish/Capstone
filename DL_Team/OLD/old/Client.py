@@ -10,9 +10,8 @@ ip_addr = conf.data[Params.IP_ADDR]
 port = int(conf.data[Params.PORT])
 encryption = (conf.data[Params.ENCRYPTION] == "1")
 cli_id = conf.data[Params.ID]
-auth = (conf.data[Params.AUTHENTICATION] == "1")
 
-cli = PI_Cli(ip_addr, port, encryption, auth, cli_id)
+cli = PI_Cli(ip_addr, port, encryption)
 print("Client -- " + cli_id + " -- online.")
 
 while True:
