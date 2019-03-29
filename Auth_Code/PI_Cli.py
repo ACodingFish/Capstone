@@ -97,7 +97,7 @@ class PI_Cli:
                     connected = True
                     self.AES = PI_AES(self.AES_key)
                     if (self.auth == True):
-                        self.Send_Msg(self.name)
+                        self.Send_Msg(self.AES.encrypt(self.name))
                         msg = self.server.recv(self.max_msg_size)
                         print("Connected to Server", self.AES.decrypt(msg))
                     self.encrypted = True
