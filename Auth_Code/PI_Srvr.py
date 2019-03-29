@@ -119,7 +119,7 @@ class PI_Srvr:
                 self.AES_KEYS.remove(old_client)
             if (self.auth == True):
                 self.cli_manager.remove(old_client)
-                self.cli_manager.p_all()
+                #self.cli_manager.p_all()
 
     #   Opens up a thread that looks for new clients attempting to establish a connection
     #   Starts a thread to manage new client connections
