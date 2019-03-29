@@ -44,6 +44,8 @@ class PI_RobotManager:
         if (self.local == False):
             self.cli = PI_Cli(ip_addr, port, encryption, auth, cli_id)
             start_new_thread(self.command_thread,())
+            if (auth == True):
+                self.associated_clients = []
             
         #start local thread
         start_new_thread(self.local_command_thread,())
@@ -64,12 +66,11 @@ class PI_RobotManager:
                 #could optimize by setting a sleep call here (latency from cli end)
                 msg = self.cli.Recv_Msg()
                 if (len(msg) >0):
-                    if (cli.auth == True):
+                    if (self.cli.auth == True):
                         #send only the message to be parsed
-                        in_cmd = commands.split(":")
-                        if (in_cmd[1] != "online"):     #if it's not a robot (robots all send online)
-                            self.add_associated_client(in_cmd[0])
-                            self.parse(in_cmd[1])
+                        in_cmd = msg.split(":")
+                        self.add_associated_client(in_cmd[0])
+                        self.parse(in_cmd[1])
                     else:
                         #relay msg to robot
                         self.parse(msg)
@@ -111,7 +112,7 @@ class PI_RobotManager:
         if (self.local == False):
             if (self.cli.auth == True):
                 if(len(self.associated_clients)>0):
-                    send_str = ",".join([client for client in clients]) #relay message to all clients who have talked to us
+                    send_str = ",".join([client for client in self.associated_clients]) #relay message to all clients who have talked to us
                     send_str +=":" + message
                     self.cli.Send_Msg(send_str)
             else:
@@ -127,7 +128,8 @@ class PI_RobotManager:
                 if (cli == client):
                     associated = True
                     break
-            self.associated_clients.append(client)
+            if (associated == False):
+                self.associated_clients.append(client)
 
     #   Parses commands and relays them to their given functions if they are valid.
     def parse(self, commands):
