@@ -18,8 +18,8 @@ class PI_ClientManager:
     def remove(self, cli):
         for i in range(len(self.client_list)):
             if (self.client_list[i].cli == cli):
-                self.client_list.pop(i)
-                break
+                return self.client_list.pop(i).name
+        return ""
 
     def search(self, name):
         cli_arr = []
