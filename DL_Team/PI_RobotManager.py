@@ -67,8 +67,9 @@ class PI_RobotManager:
                     if (cli.auth == True):
                         #send only the message to be parsed
                         in_cmd = commands.split(":")
-                        self.add_associated_client(in_cmd[0])
-                        self.parse(in_cmd[1])
+                        if (in_cmd[1] != "online"):     #if it's not a robot (robots all send online)
+                            self.add_associated_client(in_cmd[0])
+                            self.parse(in_cmd[1])
                     else:
                         #relay msg to robot
                         self.parse(msg)
