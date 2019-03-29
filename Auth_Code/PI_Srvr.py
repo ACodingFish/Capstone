@@ -73,7 +73,7 @@ class PI_Srvr:
                                 self.relay_all(msg_data[1] + ":" + msg_data[2],client) #send client id and msg
                             else:
                                 client_names = msg_data[0].split(",")
-                                for client_name in client_nams:
+                                for client_name in client_names:
                                     target_clients = self.cli_manager.search(client_name)
                                     for tg in target_clients: #for each client with that name
                                         self.send_msg(msg_data[1] + ":" + msg_data[2],tg) #send to each intended client
