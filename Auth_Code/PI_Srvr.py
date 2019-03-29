@@ -178,7 +178,8 @@ class PI_Srvr:
                             #print(aes_key)
 
                     if connected == True:
-                        print("Client Verification Successful.")
+                        if (self.auth == False):
+                            print("Client Verification Successful.")
                         start_new_thread(self.client_thread,(client,addr))
                     else:
                         thread_open = False
