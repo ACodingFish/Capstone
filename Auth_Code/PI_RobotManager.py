@@ -96,7 +96,7 @@ class PI_RobotManager:
             if(len(self.associated_clients)>0):
                 send_str = ",".join([client for client in clients])) #relay message to all clients who have talked to us
                 send_str +=":" + message
-                    self.cli.Send_Msg(send_str)
+                self.cli.Send_Msg(send_str)
         else:
             self.cli.Send_Msg(message)
 
