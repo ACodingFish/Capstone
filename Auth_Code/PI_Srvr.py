@@ -160,7 +160,7 @@ class PI_Srvr:
                                 message = client.recv(self.max_msg_size)
                                 cli_name = cli_AES.decrypt(message)
                                 self.cli_manager.add(cli_name,client)
-                                self.send_msg(cli_AES.encrypt(self.name), client)
+                                self.send_msg(self.name, client)
                                 print("Client",cli_name,"has connected.")
 
                             connected = True

@@ -98,8 +98,7 @@ class PI_Cli:
                     self.AES = PI_AES(self.AES_key)
                     self.encrypted = True
                     if (self.auth == True):
-                        name_msg = self.AES.encrypt(self.name)
-                        self.Send_Msg(name_msg)
+                        self.Send_Msg(self.name)
                         msg = self.server.recv(self.max_msg_size)
                         print("Connected to Server", self.AES.decrypt(msg))
                     print("Server Verification Successful")
