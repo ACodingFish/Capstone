@@ -99,13 +99,13 @@ class PI_RobotManager:
 #                if (self.ROBOT_INTIALIZED == True):
 #                    self.parse(msg)
 
-    def stream_thread(self):
-        while self.streaming == True:
-            if (self.ROBOT_INTIALIZED == True):
-                time.sleep(0.1) # send every 100 ms or so
-                #get data
-                stream_str = ""
-                self.send_associated_clients(stream_str)
+#    def stream_thread(self):
+#        while self.streaming == True:
+#            if (self.ROBOT_INTIALIZED == True):
+#                time.sleep(0.1) # send every 100 ms or so
+#                #get data
+#                stream_str = ""
+#                self.send_associated_clients(stream_str)
 
     def grab(self):
         while (self.left_psr <=0 and self.right_psr <= 0):
