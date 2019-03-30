@@ -8,8 +8,10 @@ from PI_RobotManager import *
 robot = PI_RobotManager()
 
 while True:
-    #should be able to put pass here
-    key_msg = sys.stdin.readline()
-    if (key_msg[:4].lower() == "exit"):
-        os._exit(0)
-    robot.parse(key_msg)
+    #should never get here
+    pass
+#    #should be able to put pass here
+#    key_msg = sys.stdin.readline()
+#    if (key_msg[:4].lower() == "exit"):
+#        os._exit(0)
+#    robot.parse(key_msg)

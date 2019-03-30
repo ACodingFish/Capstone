@@ -50,16 +50,21 @@ class PI_RobotManager:
 
         #start command thread
         #start_new_thread(self.local_command_thread,())
-        start_new_thread(self.command_thread,())
-        print("Client -- " + cli_id + " -- online.")
+        #start_new_thread(self.command_thread,())
+        #print("Client -- " + cli_id + " -- online.")
         self.left_psr = 0
         self.right_psr = 0
 
         self.ROBOT_INTIALIZED = True
+        #start command thread - Calling as function instead to prevent opening a new thread
+        #start_new_thread(self.local_command_thread,())
+        self.command_thread()
+
 
 
     #get msg, parse msg
     def command_thread(self):
+        print("Client -- " + self.cli.name + " -- online.")
         if (self.local == False):
             while True:
                 if (self.ROBOT_INTIALIZED == True):
