@@ -231,7 +231,7 @@ class PI_RobotManager:
                 half_num_adc = num_adc/2
                 prev_adc_left_count = 0
                 prev_adc_right_count = 0
-                self.parse("0lpsr, 0rpsr")
+                #self.parse("0lpsr, 0rpsr") # handled at top
                 while True:
                     sonar_bool = False
                     for i in range(self.sonar.num_sensors):
