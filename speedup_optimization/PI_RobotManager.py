@@ -16,6 +16,7 @@ else:
 class PI_RobotManager:
     def __init__(self):
         self.ROBOT_INTIALIZED = False
+        self.streaming = False
         conf = PI_Conf("conf/rob.conf")
         local = (conf.data[Params.LOCAL] == "1")
         ip_addr = conf.data[Params.IP_ADDR]
@@ -43,47 +44,60 @@ class PI_RobotManager:
         #Start remote thread
         if (self.local == False):
             self.cli = PI_Cli(ip_addr, port, encryption, auth, cli_id)
-            start_new_thread(self.command_thread,())
+            #start_new_thread(self.command_thread,())
             if (auth == True):
                 self.associated_clients = []
-            
-        #start local thread
-        start_new_thread(self.local_command_thread,())
+
+        #start command thread
+        #start_new_thread(self.local_command_thread,())
+        start_new_thread(self.command_thread,())
         print("Client -- " + cli_id + " -- online.")
         self.left_psr = 0
         self.right_psr = 0
-        self.streaming = False
-        self.ROBOT_INTIALIZED = True
-        
-        
 
+        self.ROBOT_INTIALIZED = True
 
 
     #get msg, parse msg
     def command_thread(self):
-        while True:
-            if (self.ROBOT_INTIALIZED == True):
-                #could optimize by setting a sleep call here (latency from cli end)
-                msg = self.cli.Recv_Msg()
-                if (len(msg) >0):
-                    if (self.cli.auth == True):
-                        #send only the message to be parsed
-                        in_cmd = msg.split(":")
-                        self.add_associated_client(in_cmd[0])
-                        self.parse(in_cmd[1])
-                    else:
-                        #relay msg to robot
+        if (self.local == False):
+            while True:
+                if (self.ROBOT_INTIALIZED == True):
+                    #could optimize by setting a sleep call here (latency from cli end)
+
+                    msg = self.cli.Recv_Msg()
+                    if (len(msg) >0):
+                        if (self.cli.auth == True):
+                            #send only the message to be parsed
+                            in_cmd = msg.split(":")
+                            self.add_associated_client(in_cmd[0])
+                            self.parse(in_cmd[1])
+                        else:
+                            #relay msg to robot
+                            self.parse(msg)
+
+                    if self.streaming == True:
+                        #time.sleep(0.1) # send every 100 ms or so
+                        #get data
+                        stream_str = ""
+                        self.send_associated_clients(stream_str)
+        else:
+            while True:
+                if (self.ROBOT_INTIALIZED == True):
+                    msg = sys.stdin.readline()
+                    if (len(msg) >0):
+                        #relay to robot
                         self.parse(msg)
 
-    def local_command_thread(self):
-        while True:
-            msg = sys.stdin.readline()
-            if (msg[:4].lower() == "exit"):
-                os._exit(0)
-            elif (len(msg) >0):
-                #relay to robot
-                if (self.ROBOT_INTIALIZED == True):
-                    self.parse(msg)
+#    def local_command_thread(self):
+#        while True:
+#            msg = sys.stdin.readline()
+#            if (msg[:4].lower() == "exit"):
+#                os._exit(0)
+#            elif (len(msg) >0):
+#                #relay to robot
+#                if (self.ROBOT_INTIALIZED == True):
+#                    self.parse(msg)
 
     def stream_thread(self):
         while self.streaming == True:
@@ -147,7 +161,7 @@ class PI_RobotManager:
                     "a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, \
                      #Commands (negative to allow for expandability of servos)
                     "home":-2, "obst":-3, "obcl":-4, "sd":-5, "sdeg":-6, "print":-7, "pos":-8, "grab":-9, "lpsr":-10, "rpsr":-11, \
-                    "begstr":-12, "endstr":-13 \
+                    "begstr":-12, "endstr":-13, "terminate":-14 \
                     \
                     }.get(command[index:].replace('\n','').lower(), -1)
                     # [num][a-f]    => send servo to this target position
@@ -178,11 +192,13 @@ class PI_RobotManager:
                             print("[",servos.index, "]: ", servos.current_angle, " TARGET:", servos.target_angle)
                     elif servo_index == -8:
                         if self.local == False:
-                            pos = ""
-                            for servos in self.robot.servo_list:
-                                pos+=("S" + str(servos.index) + "$" + str(servos.current_angle) + "$" + str(servos.target_angle)) # Ex. S0$100$180, s1$50$20, ...
-                                pos+=(", ")
-                            cli.Send_Msg(pos[:-1]) #remove last char and relay to server
+                            pos = ", ".join([(("S" + str(servos.index) + "$" + str(servos.current_angle) + "$" + str(servos.target_angle))) for servos in self.robot.servo_list])
+                            #pos = ""
+                            #for servos in self.robot.servo_list:
+                            #    pos+=("S" + str(servos.index) + "$" + str(servos.current_angle) + "$" + str(servos.target_angle)) # Ex. S0$100$180, s1$50$20, ...
+                            #    pos+=(", ")
+                            #cli.Send_Msg(pos[:-1]) #remove last char and relay to server
+                            self.send_associated_clients(pos)
                     elif servo_index == -9:
                         start_new_thread(self.grab,())
                     elif (servo_index == -10 and index >0):
@@ -196,6 +212,8 @@ class PI_RobotManager:
                     elif (servo_index == -13):
                         if (self.streaming == True):
                             self.streaming = False
+                    elif (servo_index == -14):
+                        os._exit(0)
                     elif (servo_index >=0 and index >0):
                         self.robot.set_servo_position(servo_index, command[:index]) # servo_index, servo_position
                     break
