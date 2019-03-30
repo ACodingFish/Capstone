@@ -46,7 +46,7 @@ class PI_RobotManager:
             start_new_thread(self.command_thread,())
             if (auth == True):
                 self.associated_clients = []
-            
+
         #start local thread
         start_new_thread(self.local_command_thread,())
         print("Client -- " + cli_id + " -- online.")
@@ -54,8 +54,8 @@ class PI_RobotManager:
         self.right_psr = 0
         self.streaming = False
         self.ROBOT_INTIALIZED = True
-        
-        
+
+
 
 
 
@@ -178,11 +178,13 @@ class PI_RobotManager:
                             print("[",servos.index, "]: ", servos.current_angle, " TARGET:", servos.target_angle)
                     elif servo_index == -8:
                         if self.local == False:
-                            pos = ""
-                            for servos in self.robot.servo_list:
-                                pos+=("S" + str(servos.index) + "$" + str(servos.current_angle) + "$" + str(servos.target_angle)) # Ex. S0$100$180, s1$50$20, ...
-                                pos+=(", ")
-                            cli.Send_Msg(pos[:-1]) #remove last char and relay to server
+                            pos = ", ".join([(("S" + str(servos.index) + "$" + str(servos.current_angle) + "$" + str(servos.target_angle))) for servos in self.robot.servo_list])
+                            #pos = ""
+                            #for servos in self.robot.servo_list:
+                            #    pos+=("S" + str(servos.index) + "$" + str(servos.current_angle) + "$" + str(servos.target_angle)) # Ex. S0$100$180, s1$50$20, ...
+                            #    pos+=(", ")
+                            #cli.Send_Msg(pos[:-1]) #remove last char and relay to server
+                            self.send_associated_clients(pos)
                     elif servo_index == -9:
                         start_new_thread(self.grab,())
                     elif (servo_index == -10 and index >0):
