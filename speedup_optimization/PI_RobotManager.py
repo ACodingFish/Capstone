@@ -212,7 +212,7 @@ class PI_RobotManager:
                         self.right_psr = int(command[:index])
                     elif (servo_index == -12):
                         if (self.streaming == False):
-                            start_new_thread(self.stream_thread,())
+                            #start_new_thread(self.stream_thread,())
                             self.streaming = True
                     elif (servo_index == -13):
                         if (self.streaming == True):
