@@ -40,14 +40,14 @@ class PI_Servo:
         self.step_length = 1.0 #seconds
         self.step_deg = step # number of degrees per step
         self.default_duration = dur # Total movement duration in seconds
-        
+
     def is_moving(self):
         #does not work.
         if (self.current_angle != self.target_angle):
             return True
         else:
             return False
-    
+
     # Sets the duration and angle of a servo
     # Takes inputs of angle and duration
     def set_current_angle(self, angle, duration=-1): #duration is in seconds
@@ -70,7 +70,7 @@ class PI_Servo:
                 #elf.last_step_time = time.time()
         else:
             print("Invalid duration or angle")
-    
+
     # Sets angle with a movement speed
     # takes input of an angle and a speed in degrees per second
     def set_current_angle_w_speed(self, angle, speed):  #speed is in deg/sec
@@ -83,7 +83,7 @@ class PI_Servo:
             self.set_current_angle(angle, duration)
         else:
             print("Invalid Speed or Angle")
-    
+
     # Sets the default duration of a servo's movement.
     def set_default_duration(self, duration):
         duration = float(duration)
@@ -91,7 +91,7 @@ class PI_Servo:
             self.default_duration = duration
         else:
             print("Invalid duration: ", duration)
-    
+
     # Sets the step length in degrees of a servo.
     def set_step_deg (self, step_deg):
         step_deg = int(step_deg)
@@ -99,31 +99,31 @@ class PI_Servo:
             self.step_deg = step_deg
         else:
             print("Invalid step value: ", step_deg)
-    
+
     # Stops the servo (Because of obstruction)
     def set_obstruction(self):
         self.current_angle = self.prev_angle
         self.target_angle = self.prev_angle
-    
+
     # Stops the servo at it's current position
     def set_hard_stop(self):
         self.target_angle = self.current_angle
-    
+
     # Forces the robot to go home.
     def force_home(self): # be careful with this as it may damage equipment or persons if they are in the robot's path
         self.current_angle = self.home-1
         self.prev_angle = self.home-1
         self.target_angle = self.home
-    
+
     # Determines the time since the last movement step was taken
     def time_since_step(self):
         return (time.time() - self.last_step_time)
-    
+
     # Resets the time since the last movement step was taken
     def reset_time(self):
         self.last_step_time = time.time()
-        
-# Class to control all of the servos and approximate their movements.        
+
+# Class to control all of the servos and approximate their movements.
 class PI_ServoController:
     # Initializes the servo controls and the servo classes with all of their parameters.
     def __init__(self, max_channels):
@@ -152,11 +152,11 @@ class PI_ServoController:
             else:
                 self.kit.servo[i].set_pulse_width_range(750, 2000)
                 #pass
-        
+
         start_new_thread(self.servo_manager_thread,())  #start thread
         self.servos_obstructed = False #pay attention to this --> may cause issues later
         self.servos_controlled = True
-        
+
     # Creates a servo with given initialization parameters
     # Inputs are:
     #   movement range in degrees
@@ -173,34 +173,34 @@ class PI_ServoController:
             self.servo_list.append(new_servo)
         else:
             print("Servos at Max Capacity")
-    
+
     #   Sets movement duration in mSec
     def set_movement_duration(self, duration):
-        
+
         duration = float(duration)/1000
         print("Setting duration to: ", duration, "s")
         for servos in self.servo_list:
             servos.set_default_duration(duration)
-    
+
     #   Sets movement step in degrees
     def set_movement_step_deg(self, deg):
         print("Setting step (deg) to: ", deg)
         deg = int(deg)
         for servos in self.servo_list:
             servos.set_step_deg(deg)
-    
+
     #   Sets all servos to home position
     def go_home(self):
         for servos in self.servo_list:
             #self.kit.servo[servos.index].angle = int(servos.home)
             servos.set_current_angle(servos.home)
-            
+
     #   Forces all servos to move to the home position
     def force_home(self):
         for servos in self.servo_list:
             #self.kit.servo[servos.index].angle = int(servos.home)
             servos.force_home()
-    
+
     # Sets a specified servo to a given position
     # Takes in a servo's index and it's desired position
     def set_servo_position(self, index, new_pos):
@@ -213,7 +213,7 @@ class PI_ServoController:
                self.servo_list[index].set_current_angle(new_pos)
         else:
             print("Invalid Index: ", index)
-    
+
     # Thread to control the servos and approximate the movement.
     # This allows movements to be controlled, synchronized, and for the direction to be changed mid-movement
     def servo_manager_thread(self):
@@ -236,13 +236,13 @@ class PI_ServoController:
                                 else:
                                     servos.current_angle -= servos.step_deg
                                     if (servos.current_angle < servos.target_angle):
-                                        servos.current_angle = servos.target_angle 
+                                        servos.current_angle = servos.target_angle
                                 self.kit.servo[servos.index].angle = int(servos.current_angle)
                                 print("Servo[", servos.index,"] at: ", servos.current_angle)
                 else:
                             # take servo obstructed action
                     for i in range(len(self.servo_list)):
-                        if (i != len(self.servo_list)-1): #if its the claw
+                        if (i != len(self.servo_list)-1): #if its not the claw
                             servos = self.servo_list[i]
                             servos.set_obstruction()
                             self.kit.servo[servos.index].angle = int(servos.prev_angle)
