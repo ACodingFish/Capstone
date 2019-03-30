@@ -24,7 +24,7 @@ class PI_Sonar:
         self.pulse_end = 0
         self.pulse_wait_time = 0
         self.timeout = 0
-        self.state = "Start"
+        self.state = "Idle"
     
     
 class PI_Sonar_Monitor:
@@ -110,21 +110,34 @@ class PI_Sonar_Monitor:
                     self.sensor_list[i].avg_arr.pop(0) # shifts all elements left
                     self.sensor_list[i].avg_arr.append(distance) # appends new element
                 self.sensor_list[i].avg = sum(self.sensor_list[i].avg_arr)/len(self.sensor_list[i].avg_arr)
-                self.sensor_list[i].state = "Start"
+                self.sensor_list[i].state = "Idle"
+            elif (self.sensor_list[i].state == "Idle"):
+                pass #do nothing for now
             else: # Default state
                 #print("RANGE EXCEPTION ON SENSOR:", i, self.sensor_list[i].state)
-                self.sensor_list[i].state = "Start"
+                self.sensor_list[i].state = "Idle"
 
-            if (self.sensor_list[i].state != prev_state):
+            if (self.sensor_list[i].state != prev_state) or (self.sensor_list[i].state == "End"):
                 self.sensor_list[i].timeout = time.time()
+                
+    def is_sonar_idle(self):
+        for sensor in self.sensor_list:
+            if (sensor.state != "Idle"):
+                return False
+        return True
+            
+    def start_sonar(self):
+        for i in range(len(self.sensor_list)):
+            self.sensor_list[i].state = "Start"
                     
     def channel_triggered(self, index):
         if (index < self.num_sensors):
             if (self.sensor_list[index].avg < self.sensor_list[index].limit):
-                print("The average is: ", self.sensor_list[index].avg)
+                #print("The average is: ", self.sensor_list[index].avg)
                 #print("The limit is: ", self.sensor_list[index].limit)
                 return True
             else:
+                #print(self.sensor_list[index].avg )
                 return False
         else:
             return False

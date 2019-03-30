@@ -100,7 +100,7 @@ class PI_RobotManager:
                     try:
                         sonar_cmds = self.sensors.detect_sonar()
                         for sonar_cmd in sonar_cmds:
-                            parse(sonar_cmd)
+                            self.parse(sonar_cmd)
                     #adc
                         adc_cmds = self.sensors.detect_adc()
                         for adc_cmd in adc_cmds:
