@@ -71,7 +71,6 @@ class PI_RobotManager:
         self.parse("obcl")
         if (self.local == False):
             while True:
-                time.sleep(0.01)
 
                 if (self.ROBOT_INTIALIZED == True):
                     #could optimize by setting a sleep call here (latency from cli end)
