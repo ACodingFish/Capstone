@@ -59,12 +59,18 @@ class PI_Srvr:
         while thread_open == True:
             try:
                 message = client.recv(self.max_msg_size)
-                if (self.encrypted == True):
-                    message = aes.decrypt(message)
-
-                if type(message) != str:
-                    message = message.decode('utf-8')
                 if message:
+                    try:
+                        if (self.encrypted == True):
+                            message = aes.decrypt(message)
+
+                        if type(message) != str:
+                            message = message.decode('utf-8')
+                    except Exception as e:
+                        print(e)
+                        print("Could not decode message")
+                        continue
+
                     if (len(message) > 0):
                         print(message)
                         if (self.auth == True):
@@ -79,9 +85,9 @@ class PI_Srvr:
                                         self.send_msg(msg_data[1] + ":" + msg_data[2],tg) #send to each intended client
                         else:
                             self.relay_all(message,client)
-#                else:
-#                    self.remove(client)
-#                    thread_open = False
+                else:
+                    self.remove(client)
+                    thread_open = False
             except Exception as e:
                 print(e)
                 self.remove(client)
