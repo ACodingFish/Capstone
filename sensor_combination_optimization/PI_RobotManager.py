@@ -36,7 +36,7 @@ class PI_RobotManager:
         #self.sonar = PI_Sonar_Monitor()
         #self.adc = PI_ADC_MONITOR()
         self.sensors = PI_SensorManager()
-        
+
         #sensor thread moved inside of monitor thread
         #start_new_thread(self.sensor_thread,())
 
@@ -71,7 +71,8 @@ class PI_RobotManager:
         self.parse("obcl")
         if (self.local == False):
             while True:
-                
+                time.sleep(0.01)
+
                 if (self.ROBOT_INTIALIZED == True):
                     #could optimize by setting a sleep call here (latency from cli end)
 
@@ -94,7 +95,7 @@ class PI_RobotManager:
                             self.send_associated_clients(stream_str)
                     except Exception as e:
                         print(e)
-                    
+
                     #sensors
                     #sonar
                     try:
@@ -108,7 +109,7 @@ class PI_RobotManager:
                     except Exception as e:
                         print(e)
                         os._exit(0)
-                    
+
         else:
             while True:
                 if (self.ROBOT_INTIALIZED == True):
