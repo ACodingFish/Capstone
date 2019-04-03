@@ -208,6 +208,10 @@ class PI_RobotManager:
     def send_pos(self):
         if self.local == False:
             pos = ", ".join([(("S" + str(servos.index) + "$" + str(servos.current_angle) + "$" + str(servos.target_angle))) for servos in self.robot.servo_list])
+            if (self.robot.servos_obstructed == False):
+                pos = ", ".join([pos, "0ob"])
+            else:
+                pos = ", ".join([pos, "1ob"])
             #pos = ""
             #for servos in self.robot.servo_list:
             #    pos+=("S" + str(servos.index) + "$" + str(servos.current_angle) + "$" + str(servos.target_angle)) # Ex. S0$100$180, s1$50$20, ...
