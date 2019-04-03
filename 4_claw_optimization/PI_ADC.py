@@ -19,7 +19,7 @@ class PI_ADC:
         self.limit = limit
     
 class PI_ADC_MONITOR:
-    def __init__(self, num_channels=8, num_avgs=3, limit=750):
+    def __init__(self, num_channels=8, num_avgs=3, limit=100):
         self.initialized = False
         self.num_channels = num_channels
         self.adc = [] #insert class here (Somehow pass parameters? or default them?)
