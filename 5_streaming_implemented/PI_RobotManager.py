@@ -68,6 +68,7 @@ class PI_RobotManager:
         self.ROBOT_INTIALIZED = True
         #start command thread - Calling as function instead to prevent opening a new thread
         #start_new_thread(self.local_command_thread,())
+        self.stream_time = 0
         self.command_thread()
 
 
@@ -207,17 +208,20 @@ class PI_RobotManager:
     #   Streams position to associated associated clients
     def send_pos(self):
         if self.local == False:
-            pos = ", ".join([(("S" + str(servos.index) + "$" + str(servos.current_angle) + "$" + str(servos.target_angle))) for servos in self.robot.servo_list])
-            if (self.robot.servos_obstructed == False):
-                pos = ", ".join([pos, "0ob"])
-            else:
-                pos = ", ".join([pos, "1ob"])
-            #pos = ""
-            #for servos in self.robot.servo_list:
-            #    pos+=("S" + str(servos.index) + "$" + str(servos.current_angle) + "$" + str(servos.target_angle)) # Ex. S0$100$180, s1$50$20, ...
-            #    pos+=(", ")
-            #cli.Send_Msg(pos[:-1]) #remove last char and relay to server
-            self.send_associated_clients(pos)
+            #put in local timing here
+            if ((time.time()-self.stream_time) > 0.5):
+                self.stream_time = time.time()
+                pos = ", ".join([(("S" + str(servos.index) + "$" + str(servos.current_angle) + "$" + str(servos.target_angle))) for servos in self.robot.servo_list])
+                if (self.robot.servos_obstructed == False):
+                    pos = ", ".join([pos, "0ob"])
+                else:
+                    pos = ", ".join([pos, "1ob"])
+                #pos = ""
+                #for servos in self.robot.servo_list:
+                #    pos+=("S" + str(servos.index) + "$" + str(servos.current_angle) + "$" + str(servos.target_angle)) # Ex. S0$100$180, s1$50$20, ...
+                #    pos+=(", ")
+                #cli.Send_Msg(pos[:-1]) #remove last char and relay to server
+                self.send_associated_clients(pos)
 
     #   Parses commands and relays them to their given functions if they are valid.
     def parse(self, commands):
@@ -280,6 +284,7 @@ class PI_RobotManager:
                         self.right_psr = int(command[:index])
                     elif (servo_index == -12):
                         self.streaming = True
+                        self.stream_time = time.time()
                     elif (servo_index == -13):
                         self.streaming = False
                     elif (servo_index == -14):
