@@ -42,7 +42,8 @@ class PI_SensorManager:
             sonar_bool = False
             for i in range(self.sonar.num_sensors):
                 if (self.sonar.channel_triggered(i)):
-                    sonar_bool = True
+                    if (self.sonar.is_sensor_obst(i)):
+                        sonar_bool = True
                     break
 
             if (sonar_bool == True)and(self.prev_sonar_bool == False):
@@ -83,3 +84,12 @@ class PI_SensorManager:
             self.prev_adc_right_count = 5
             print(e)
             return ["5lspr","5rpsr"]
+    
+    def is_floor(self):
+        for i in range(self.sonar.num_sensors):
+            if (self.sonar.is_sensor_obst(i)==False):
+                if (self.sonar.channel_triggered(i)):
+                    return True
+        return False
+        
+            

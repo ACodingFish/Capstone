@@ -176,9 +176,13 @@ class PI_RobotManager:
                     self.send_associated_clients("grabfinish")
                     self.grabbing = False
     def drop(self):
-        self.grabbing = False
-        self.grab_waiting = False
-        self.robot.set_servo_position(self.claw_index,self.claw_open)
+        if (self.sensors.is_floor()):
+            self.grabbing = False
+            self.grab_waiting = False
+            self.robot.set_servo_position(self.claw_index,self.claw_open)
+            self.send_associated_clients("dropsuccess")
+        else:
+            self.send_associated_clients("dropfail")
 
     #   Sends to all registered clients who have sent a msg to robot
     def send_associated_clients(self, message):
