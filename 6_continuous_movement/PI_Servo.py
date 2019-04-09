@@ -139,6 +139,7 @@ class PI_ServoController:
         # servo 6 - 40 (closed) 1 (open)
         step_len = 1
         mov_duration = 3.0
+	self.move_cont = False #for continuation of movement after obstruction
         for sv in sv_info:
             self.add_servo(sv[0],sv[1], sv[2], sv[3], step_len, mov_duration)
         for i in range(len(sv_info)):
@@ -246,9 +247,14 @@ class PI_ServoController:
                                 #print("Servo[", servos.index,"] at: ", servos.current_angle)
                 else:
                             # take servo obstructed action
-                    for i in range(len(self.servo_list)):
-                        if (i != len(self.servo_list)-1): #if its not the claw
-                            servos = self.servo_list[i]
-                            servos.set_obstruction()
-                            self.kit.servo[servos.index].angle = int(servos.prev_angle)
+                    if (self.move_cont == False):
+                        for i in range(len(self.servo_list)):
+                            if (i != len(self.servo_list)-1): #if its not the claw
+                                servos = self.servo_list[i]
+                                servos.set_obstruction()
+                                self.kit.servo[servos.index].angle = int(servos.prev_angle)
                 #pre_loop_time = time.time()
+
+    # sets/disables continuous movement
+    def continuous_movement(self, enabled):
+        self.move_cont = enabled

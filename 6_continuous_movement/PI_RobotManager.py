@@ -243,7 +243,7 @@ class PI_RobotManager:
                     "a": 0, "b": 1, "c": 2, "d": 3, "e": 4, "f": 5, \
                      #Commands (negative to allow for expandability of servos)
                     "home":-2, "obst":-3, "obcl":-4, "sd":-5, "sdeg":-6, "print":-7, "pos":-8, "grab":-9, "lpsr":-10, "rpsr":-11, \
-                    "begstr":-12, "endstr":-13, "terminate":-14, "homenc":-15, "drop":-16 \
+                    "begstr":-12, "endstr":-13, "terminate":-14, "homenc":-15, "drop":-16, "encm":-17, "dscm":-18 \
                     \
                     }.get(command[index:].replace('\n','').lower(), -1)
                     # [num][a-f]    => send servo to this target position
@@ -262,6 +262,8 @@ class PI_RobotManager:
                     # terminate     => Terminate program
                     # homenc        => Same as home command, but does not move claw
                     # drop          => Opens claw to drop a held object
+                    # encm          => enables continuous movement after obstacle detection
+                    # dscm          => disables continuous movement after obstacle detection
 
                     if servo_index == -2:
                         self.robot.go_home()
@@ -297,6 +299,10 @@ class PI_RobotManager:
                         self.robot.go_home_no_claw()
                     elif (servo_index == -16):
                         self.drop()
+                    elif (servo_index == -17):
+                        self.robot.continuous_movement(True)
+                    elif (servo_index == -18):
+                        self.robot.continuous_movement(False)
                     elif (servo_index >=0 and index >0):
                         self.robot.set_servo_position(servo_index, command[:index]) # servo_index, servo_position
                     break
