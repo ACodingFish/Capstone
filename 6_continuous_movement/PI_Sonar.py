@@ -10,7 +10,7 @@ else:
     from thread import *      #Server program
     
 class PI_Sonar:
-    def __init__(self, trig, echo, num_avgs, limit):
+    def __init__(self, trig, echo, num_avgs, limit, obst=False):
         self.trig = trig
         self.echo = echo
         GPIO.setup(self.trig,GPIO.OUT)
@@ -25,14 +25,15 @@ class PI_Sonar:
         self.pulse_wait_time = 0
         self.timeout = 0
         self.state = "Idle"
+        self.obst_sensor = obst
     
     
 class PI_Sonar_Monitor:
     def __init__(self):
         self.initialized = False
         self.sensor_list = []
-        # [[trigger pin, echo pin, num_avgs, limit],....]
-        sonar_info=[[23,24,3,10]]#,[5,6,3,10]]
+        # [[trigger pin, echo pin, num_avgs, limit, obst_vs_direct_read],....]
+        sonar_info=[[23,24,2,10,True],[5,6,2,10,True],[20,21,2,10,False]]
         self.num_sensors = len(sonar_info)
         for sensor in sonar_info:
             self.add_sensor(sensor[0], sensor[1], sensor[2], sensor[3]) 
@@ -145,5 +146,8 @@ class PI_Sonar_Monitor:
                     
     def get_avg(self, index):
         return self.sensor_list[index].avg
+
+    def is_sensor_obst(self, index):
+        return self.sensor_list[index].obst_sensor
         
     

@@ -143,3 +143,7 @@ class PI_Cli:
             return self.msg_buf.popleft()
         else:
             return ""
+
+    def Empty_Queue(self):
+        while (len(self.msg_buf) > 0):
+            self.msg_buf.popleft()
