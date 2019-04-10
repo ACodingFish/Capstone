@@ -139,7 +139,7 @@ class PI_ServoController:
         # servo 6 - 40 (closed) 1 (open)
         step_len = 1
         mov_duration = 3.0
-	self.move_cont = False #for continuation of movement after obstruction
+        self.move_cont = False #for continuation of movement after obstruction
         for sv in sv_info:
             self.add_servo(sv[0],sv[1], sv[2], sv[3], step_len, mov_duration)
         for i in range(len(sv_info)):
