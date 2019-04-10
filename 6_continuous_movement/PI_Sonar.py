@@ -10,7 +10,7 @@ else:
     from thread import *      #Server program
     
 class PI_Sonar:
-    def __init__(self, trig, echo, num_avgs, limit, obst=False):
+    def __init__(self, trig, echo, num_avgs, limit, obst):
         self.trig = trig
         self.echo = echo
         GPIO.setup(self.trig,GPIO.OUT)
@@ -33,16 +33,16 @@ class PI_Sonar_Monitor:
         self.initialized = False
         self.sensor_list = []
         # [[trigger pin, echo pin, num_avgs, limit, obst_vs_direct_read],....]
-        sonar_info=[[23,24,2,10,True],[5,6,2,10,True],[20,21,2,10,False]]
+        sonar_info=[[23,24,3,10,True],[5,6,3,10,True],[20,21,3,10,False]]
         self.num_sensors = len(sonar_info)
         for sensor in sonar_info:
-            self.add_sensor(sensor[0], sensor[1], sensor[2], sensor[3]) 
+            self.add_sensor(sensor[0], sensor[1], sensor[2], sensor[3], sensor[4]) 
         self.initialized = True
         #start_new_thread(self.run_sonar_sensors_thread,())
         
         
-    def add_sensor(self, trig, echo, num_avgs, limit):
-        new_sensor = PI_Sonar(trig, echo, num_avgs, limit)
+    def add_sensor(self, trig, echo, num_avgs, limit, obst):
+        new_sensor = PI_Sonar(trig, echo, num_avgs, limit, obst)
         self.sensor_list.append(new_sensor)
     
 #    def get_elem(self, index):
@@ -115,7 +115,17 @@ class PI_Sonar_Monitor:
             elif (self.sensor_list[i].state == "Idle"):
                 pass #do nothing for now
             else: # Default state
+                distance = self.sensor_list[i].limit +1
                 #print("RANGE EXCEPTION ON SENSOR:", i, self.sensor_list[i].state)
+                # insert into array
+                if len(self.sensor_list[i].avg_arr) < self.sensor_list[i].max_length:
+                    self.sensor_list[i].avg_arr.append(distance) # appends new elements
+                else:
+                    #shift every array elem down 1 and remove oldest
+                    #put in new elem
+                    self.sensor_list[i].avg_arr.pop(0) # shifts all elements left
+                    self.sensor_list[i].avg_arr.append(distance) # appends new element
+                self.sensor_list[i].avg = sum(self.sensor_list[i].avg_arr)/len(self.sensor_list[i].avg_arr)
                 self.sensor_list[i].state = "Idle"
 
             if (self.sensor_list[i].state != prev_state) or (self.sensor_list[i].state == "End"):

@@ -44,7 +44,7 @@ class PI_SensorManager:
                 if (self.sonar.channel_triggered(i)):
                     if (self.sonar.is_sensor_obst(i)):
                         sonar_bool = True
-                    break
+                        break
 
             if (sonar_bool == True)and(self.prev_sonar_bool == False):
                 parse_str.append("obst")
