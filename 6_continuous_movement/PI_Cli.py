@@ -66,16 +66,20 @@ class PI_Cli:
                     if socks == self.server:
                         msg = socks.recv(self.max_msg_size)
                         if (self.encrypt == True):
-                            msg = self.AES.decrypt(msg)
-                            if type(msg) != str:
-                                msg = msg.decode('utf-8')
+                            try:
+                                msg = self.AES.decrypt(msg)
+                                if type(msg) != str:
+                                    msg = msg.decode('utf-8')
+                            except Exception as f:
+                                print(msg)
+                                continue
                         else:
                             msg = msg.decode('utf-8')
                         #store in queue
                         self.msg_buf.append(msg)
                         print(msg)
         except Exception as e:
-            #print(e)
+            print(e)
             print("Lost connection to Server.")
             os._exit(0)
 

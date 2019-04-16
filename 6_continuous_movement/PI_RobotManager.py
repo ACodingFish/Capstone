@@ -21,7 +21,8 @@ class PI_RobotManager:
         self.grab_waiting = False
         conf = PI_Conf("conf/rob.conf")
         local = (conf.data[Params.LOCAL] == "1")
-        ip_addr = conf.data[Params.IP_ADDR]
+        #ip_addr = conf.data[Params.IP_ADDR]
+        ip_addr = "10.104.130.87"
         port = conf.data[Params.PORT]
         encryption = (conf.data[Params.ENCRYPTION] == "1")
         cli_id = conf.data[Params.ID]
