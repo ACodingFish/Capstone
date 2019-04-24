@@ -36,7 +36,7 @@ g.	Content:
 h.	Features:
 	i.	Server/Client communication with optional RSA and AES encryption and hashing.
 	ii.	Servo control with the ability to specify positions of multiple servos at once.
-	iii.	Configurable degree steps for servo movement.
+	iii.	Configurable degree steps for servo movement
 	iv.	Configurable duration for approximating the same arrival time for each servo (if capable).
 	v.	Servo controller flag option for the Client program to allow communication with servos over WiFi
 	vi.	Servo controller allows for changing and tracking of direction
@@ -46,24 +46,47 @@ h.	Features:
 	x.	Encryption initiation methods protect against messages sent by unapproved connections
 	xi.	Encryption initiation methods protect messages from being heard by unapproved connections
 	xii.	Encryption uses hashing to prevent messages from being tampered with
+	xiii.	Sensors for protection methods
+	xiv.	Sensors for floor detection (dropping objects)
+	xv.	Sensors for detecting pressure (grabbing objects)
+	xvi.	Configuration files for easy setup of new servers and clients
+	xvii.	Authentication for routing and security purposes
+	xviii.	Robot Manager to manage all robot control operations.
+	xviv.	Sensor Manager to manage the sensors and help generate commands for sensors.
 
 ----------------------------------------
 ----------------------------------------
 II. List of Files
 ----------------------------------------
 ----------------------------------------
-a.	PI_Srvr.py
-b.	PI_Cli.py
-c.	PI_Servo.py
-d.	PI_RSA.py
-e.	PI_AES.py
+a.	Classes
+	i.	PI_Srvr.py
+	ii.	PI_Cli.py
+	iii.	PI_Servo.py
+	iv.	PI_RSA.py
+	v.	PI_AES.py
+	vi.	PI_Sonar.py
+	vi.	PI_ADC.py
+	vii.	PI_Conf.py
+	viii.	PI_RobotManager.py
+	viv.	PI_SensorManager.py
+b.	Scripts
+	i.	Client.py
+	ii.	LocalClient.py
+	iii.	RobotClient.py
+	iv.	Server.py
+c.	Config Files
+	i.	conf/cli.conf
+	ii.	conf/loc.conf
+	iii.	conf/rob.conf
+	iv.	conf/srvr.conf
 
 ----------------------------------------
 ----------------------------------------
 III. External Dependencies
 ----------------------------------------
 ----------------------------------------
-a.	Pycrypto
+a.	Pycrypto (or pycryptodome for PC)
 b.	Adafruit ServoKit
 
 ----------------------------------------
@@ -88,6 +111,16 @@ c.	Robotic Arm
 	i.	Assemble the desired robotic arm and associated servos
 	ii.	Connect robotic arm to servos
 	iii.	Connect the servo hat to power
+d.	Sensors
+	i.	Sonar sensors are mounted on front, left, and right side of robotic arm
+	ii.	ADC sensors are clipped to the inside of the robot's claw.
+e.	Configuration Files
+	i. 	LOCAL (0 or 1) - Non functional at the moment due to thread reduction, leave as 0
+	ii. 	IP Address - Specifies the IP address of the server for client configuration files. (127.0.0.1 is localhost)
+	iii. 	Port - Specifies port number that the server is bound on
+	iv.	Encryption (0 or 1) - 1 enables encryption, 0 disables - Authentication will enable encryption by default, 0 is untested
+	v.	ID - Specifies the name of the server or client
+	vi.	Authentication (0 or 1) - 1 enables authentication, 0 disables - 0 is untested
 
 ----------------------------------------
 ----------------------------------------
@@ -108,10 +141,8 @@ a.	Configuring Servo Initialization Parameters
 		d. The second parameter is the home position in degrees of the servo.
 		e. The third parameter is the maximum degree position of the servo.
 		f. The fourth parameter is the minimum degree position of the servo.
-b.	Configuring Server Parameters
-	i.	Port parameter is passed by command line, see section IV.a
-c.	Configuring Client Parameters
-	i.	IP and Port parameters are passed by command line, see section IV.b
+	iv.	Adding sensors
+		a. Initialization arrays similar to Adding servos can be found in PI_Sonar.py
 
 ----------------------------------------
 ----------------------------------------
@@ -119,19 +150,18 @@ VI. Operation
 ----------------------------------------
 ----------------------------------------
 a.	Setting up Server
-	i.	The Server program can be launched by entering a port number as a command line argument
-		a. Ex. ./Server.py 10001
-		b. Ex. ./Server.py - This will launch on a default port of 10001
+	i.	The Server program can be launched using specified info from its config file.
+		a. Ex. ./Server.py
 b.	Setting up Client
-	i.	The Client program can be launched by entering an ip address and a port number as command line arguments
-		a. Ex. ./Client.py 127.0.0.1 10001
-		b. Ex. ./Client.py - This will launch on a default ip of localhost (127.0.0.1) port of 10001
+	i.	The Client program can be launched using specified info from its config file.
+		a. Ex. ./Client.py
 c.	Setting up RobotClient
-	i.	The Robot Client program is launched similarly to the Client Program
-		a. Ex. ./RobotClient.py 127.0.0.1 10001
-		b. Ex. ./RobotClient.py - This will launch on a default ip of localhost (127.0.0.1) port of 10001
+	i.	The Robot Client program can be launched using specified info from its config file.
+		a. Ex. ./RobotClient.py
 d.	Sending Commands
 	i.	Using the Socket Server/Client, a command received by the robot client will automatically be sent to the robot.
+	ii.	If authentication is active, then it will keep track of which clients have sent messages to it and only stream data back to the proper clients.
+		a. i.e. the clients who have sent a message to it before.
 e.	Valid Commands
 	i.	Servo Movement - [servoPosition][servoIndex]
 		a. Ex. 20a - Moves servo index 0 to position 20 degrees
@@ -146,6 +176,7 @@ f.	Sending Multiple Commands
 	i.	Multiple commands can be sent by separating each command with a comma and a space.
 		a. Ex. 1000sd, 5sdeg, 120a, 20b, 20c, 50d, 80e, 30f
 	ii.	Commands are processed in order.
+g.	All of the valid commands can be seen in the parse function within PI_RobotManager.py
 
 ----------------------------------------
 ----------------------------------------
@@ -156,7 +187,7 @@ a.	Author: Jonathan Dean
 b.	Team Lead: John Zoodsma
 c.	University: Tennessee Technological University
 d.	Department: Department of Computer and Electrical Engineering
-e.	Professor: Dr. Hasan
+e.	Professors: Dr. Hasan, Dr. Guo
 f.	Code Authors:
 	i.	Jonathan Dean
 	ii.	John Zoodsma
@@ -177,12 +208,12 @@ h.	Code Resources:
 VIII. Known Bugs
 ----------------------------------------
 ----------------------------------------
-a.	Server hangs on Unencrypted Client Connection
-	i.	Need to fix unencrypted side of server/client
-	ii.	Not an issue on encrypted (default) client
+a.	Possible bugs in unencrypted/unauthenticated version of client/server programs (Untested).
+
 ----------------------------------------
 ----------------------------------------
 IX. Change Log
 ----------------------------------------
 ----------------------------------------
+	04/24/2019	Documentation Update for end of semester
 	02/07/2019 	Initial Document Creation

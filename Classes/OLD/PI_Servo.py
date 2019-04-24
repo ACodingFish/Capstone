@@ -132,7 +132,7 @@ class PI_ServoController:
         self.kit = ServoKit(channels=self.max_channels)
         self.servo_list = []
         #add servos [[sv1_range, sv1_home, sv1_max_deg, sv1_min_deg], [sv2...],...]
-        sv_info = [[180,90,180,1],[180,45,135,1],[180,90,180,1],[180,90,180,1],[180,90,180,1],[120,1,40,1]]
+        sv_info = [[180,90,180,1],[180,45,135,1],[180,90,180,1],[180,90,180,1],[180,90,180,1],[120,1,37,1]]
         # servo 1 - right to left
         # servo 2 - top to bottom
         # servo 3 - top to bottom
@@ -241,7 +241,9 @@ class PI_ServoController:
                                 print("Servo[", servos.index,"] at: ", servos.current_angle)
                 else:
                             # take servo obstructed action
-                    for servos in self.servo_list:
-                        servos.set_obstruction()
-                        self.kit.servo[servos.index].angle = int(servos.prev_angle)
+                    for i in range(len(self.servo_list)):
+                        if (i != len(self.servo_list)-1): #if its the claw
+                            servos = self.servo_list[i]
+                            servos.set_obstruction()
+                            self.kit.servo[servos.index].angle = int(servos.prev_angle)
                 #pre_loop_time = time.time()

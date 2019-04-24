@@ -20,7 +20,6 @@ class PI_ADC:
     
 class PI_ADC_MONITOR:
     def __init__(self, num_channels=8, num_avgs=3, limit=750):
-        self.initialized = False
         self.num_channels = num_channels
         self.adc = [] #insert class here (Somehow pass parameters? or default them?)
         #initialize the adc
@@ -42,8 +41,7 @@ class PI_ADC_MONITOR:
             self.adc.append(PI_ADC(num_avgs, limit)) # average 3 times
             
         #start thread
-        self.initialized = True
-        #start_new_thread(self.monitor_thread,())
+        start_new_thread(self.monitor_thread,())
         
         
     def read_adc(self, channel):
@@ -82,17 +80,17 @@ class PI_ADC_MONITOR:
         return adcout
             
     def monitor_thread(self):
-        #while True:
-        for i in range(self.num_channels):
-            value = self.read_adc(i)
-            if (self.adc[i].num_avg < self.adc[i].max_num_avg):# initialize num avg to zero first (this is the number that have been read)
-                self.adc[i].num_avg += 1
-            else:
-                #shift every array elem down 1 and remove oldest
-                #put in new elem
-                self.adc[i].avg_arr.pop(0) # shifts all elements left
-            self.adc[i].avg_arr.append(value) # appends new element
-            self.adc[i].avg = sum(self.adc[i].avg_arr)/len(self.adc[i].avg_arr)
+        while True:
+            for i in range(self.num_channels):
+                value = self.read_adc(i)
+                if (self.adc[i].num_avg < self.adc[i].max_num_avg):# initialize num avg to zero first (this is the number that have been read)
+                    self.adc[i].num_avg += 1
+                else:
+                    #shift every array elem down 1 and remove oldest
+                    #put in new elem
+                    self.adc[i].avg_arr.pop(0) # shifts all elements left
+                self.adc[i].avg_arr.append(value) # appends new element
+                self.adc[i].avg = sum(self.adc[i].avg_arr)/len(self.adc[i].avg_arr)
     
     def get_adc_avg(self, index):
         return self.adc[index].avg #should default to 0
